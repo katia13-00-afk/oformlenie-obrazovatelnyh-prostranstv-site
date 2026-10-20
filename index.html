@@ -1675,7 +1675,7 @@ function buildIso(wrap){
     if (!reduce){
       if (phase === 'hold'){
         var ht = now - phaseT;
-        if (ht < FADE_IN) stripsAt(ht, true); else if (ht > HOLD - FADE_OUT) stripsAt(ht - (HOLD - FADE_OUT), false); else stripsAt(9999, true);
+        stripsAt(9999, true);
         if (ht > HOLD){ strips.forEach(function(s){ s.m.visible = false; }); nextPhase(now); }
       }
       else if (phase === 'spin'){ var k = Math.min(1, (now - phaseT) / SPIN); cube.rotation.y = spinFrom + (spinTo - spinFrom) * ease(k); if (k >= 1) nextPhase(now); }
