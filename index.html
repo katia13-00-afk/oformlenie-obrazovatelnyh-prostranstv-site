@@ -1675,7 +1675,7 @@ function buildIso(wrap){
     if (!reduce){
       if (phase === 'hold'){
         var ht = now - phaseT;
-        stripsAt(9999, true);
+        /* заливка швов отключена: полосы между клетками остаются видимыми */
         if (ht > HOLD){ strips.forEach(function(s){ s.m.visible = false; }); nextPhase(now); }
       }
       else if (phase === 'spin'){ var k = Math.min(1, (now - phaseT) / SPIN); cube.rotation.y = spinFrom + (spinTo - spinFrom) * ease(k); if (k >= 1) nextPhase(now); }
