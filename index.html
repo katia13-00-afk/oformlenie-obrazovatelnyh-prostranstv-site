@@ -1576,7 +1576,7 @@ function buildIso(wrap){
     sh.lineTo(-h, s/2); sh.quadraticCurveTo(-s/2, s/2, -s/2, h); sh.lineTo(-s/2, -h); sh.quadraticCurveTo(-s/2, -s/2, -h, -s/2);
     var g = new THREE.ExtrudeGeometry(sh, { depth:S - 2*r, bevelEnabled:true, bevelThickness:r, bevelSize:r, bevelSegments:3, curveSegments:4 }); g.center(); return g; }
   var body = new THREE.MeshStandardMaterial({ color:new THREE.Color('#E9ECF0').convertSRGBToLinear(), roughness:.55 });
-  var bodyGeo = rbox(1.0, .006), CELL = 1.0, ST = .94;
+  var bodyGeo = rbox(1.0, .006), CELL = 1.0, ST = .975;
   // ориентация и проекция UV для каждой грани
   var F = {
     pz:{ n:[0,0,1],  r:[0,0,0],            uv:function(p){ return [p.x, p.y]; } },
