@@ -4035,3 +4035,12 @@ html body .hd-hot .hd-tag::after{ transform-origin:50% 100%; animation:hdLine .5
 html body .hd-hot .hd-tag-b{ animation:hdFloat 4.6s ease-in-out calc(7.6s + var(--n) * .35s) infinite alternate; }
 @keyframes hdFloat{ from{ transform:translateY(0); } to{ transform:translateY(-3px); } }
 @media(prefers-reduced-motion:reduce){ .hd-hot, .hd-hot .hd-tag, .hd-hot .hd-tag::after, .hd-hot::before, .hd-hot .hd-tag-b{ animation:none !important; opacity:1; } .hd-hot::before{ opacity:0; } }
+
+/* нижние теги: подпись под линией земли, выноска вниз */
+html body .hd-hot.below .hd-tag{ bottom:auto; top:calc(100% + var(--u) * var(--lh)); }
+html body .hd-hot.below .hd-tag::after{ top:auto; bottom:100%; transform-origin:50% 0; }
+html body .hd-hot.below .hd-tag{ animation-name:hdTagPopB; }
+@keyframes hdTagPopB{
+  0%{ opacity:0; transform:translateX(-50%) translateY(-14px) scale(.65); }
+  55%{ opacity:1; transform:translateX(-50%) translateY(4px) scale(1.05); }
+  100%{ opacity:1; transform:translateX(-50%) translateY(0) scale(1); } }
