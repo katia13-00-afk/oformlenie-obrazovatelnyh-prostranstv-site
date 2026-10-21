@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Days+One&display=swap&subset=cyrillic" rel="stylesheet">
 
-<link rel="stylesheet" href="site.css?v=54">
+<link rel="stylesheet" href="site.css?v=55">
 </head>
 <body>
 
@@ -1671,7 +1671,7 @@ function buildIso(wrap){
   function stripsAt(ms, grow){                          // ms от начала роста/сворачивания
     strips.forEach(function(s){ var k = Math.max(0, Math.min(1, (ms - s.delay) / 330)); k = 1 - Math.pow(1 - k, 3); setStrip(s, grow ? k : 1 - k); });
   }
-  var faceIdx = 0, FADE_IN = 240, FADE_OUT = 240;
+  var faceIdx = 0, FADE_IN = 420, FADE_OUT = 320;
   var elL = document.getElementById('whyL'), elR = document.getElementById('whyR');
   function setText(i, on){ if (!elL) return; if (on){ elL.innerHTML = THESES[i][0]; elR.innerHTML = THESES[i][2]; } elL.classList.toggle('is-out', !on); elR.classList.toggle('is-out', !on); }
 
@@ -1695,13 +1695,13 @@ function buildIso(wrap){
       if (phase === 'hold'){
         var ht = now - phaseT;
         stripsAt(9999, true);   /* на неподвижной лицевой грани швы закрыты: цвет сплошной */
-        stripMat.opacity = Math.max(0, Math.min(1, Math.min(ht / FADE_IN, (HOLD - ht) / FADE_OUT)));
+        stripMat.opacity = Math.max(0, Math.min(1, Math.min(.4 + .6 * ht / FADE_IN, (HOLD - ht) / FADE_OUT)));
         if (ht > HOLD){ strips.forEach(function(s){ s.m.visible = false; }); nextPhase(now); }
       }
       else if (phase === 'spin'){ var k = Math.min(1, (now - phaseT) / SPIN); cube.rotation.y = spinFrom + (spinTo - spinFrom) * ease(k); if (k >= 1) nextPhase(now); }
       else {
         if (!cur && queue.length) beginMove(queue.shift(), now);
-        if (cur){ var q = Math.min(1, (now - cur.t0) / cur.dur); cur.pv.rotation[cur.mv.a] = cur.mv.d * Math.PI/2 * ease(q); if (q >= 1) endMove(); }
+        if (cur){ var q = Math.min(1, (now - cur.t0) / cur.dur); cur.pv.rotation[cur.mv.a] = cur.mv.d * Math.PI/2 * ease(q); if (phase === 'solve' && !queue.length && q > .4){ stripMat.map = TEX[ORDER[(faceIdx + 1) % 4]]; stripMat.needsUpdate = true; stripsAt(9999, true); stripMat.opacity = (q - .4) / .6 * .4; } if (q >= 1) endMove(); }
         if (!cur && !queue.length) nextPhase(now);
       }
     }
