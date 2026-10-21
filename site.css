@@ -4306,3 +4306,7 @@ html body #whyus .wy-slide h3{ font-size:clamp(18px,1.5vw,22px) !important; }
   html body #whyus .wy-slide, html body #whyus .wy-slide:nth-child(n+5){ padding:14px !important; }
   html body #whyus .wy-slide h3{ font-size:13.5px !important; line-height:1.25 !important; overflow-wrap:normal !important; word-break:normal !important; hyphens:auto !important; -webkit-hyphens:auto !important; }
 }
+
+/* этапы работы: почти без теней */
+html body #process .pr-card, html body #process .pr-split .pr-card{ box-shadow:0 1px 2px rgba(22,25,27,.05) !important; filter:none !important; }
+@media(hover:hover){ html body #process .pr-card:hover{ box-shadow:0 8px 18px -12px rgba(22,25,27,.22) !important; } }
