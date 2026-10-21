@@ -4055,3 +4055,4 @@ html body #why .why-body mark.ac{ font-weight:600; }
 
 /* заголовок главного экрана: без вставок, средний вес */
 html body .hd2 h1{ font-weight:600 !important; letter-spacing:-.028em; }
+@media(min-width:901px){ html body .hd2 h1{ white-space:nowrap; max-width:none !important; } }
