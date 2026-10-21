@@ -4167,3 +4167,4 @@ a, button, summary, [role="button"], [role="link"], .arc-card{ -webkit-tap-highl
   html body .wy-slide{ flex:0 0 82% !important; }
   html body .wy-slide h3{ font-size:23px !important; hyphens:auto; -webkit-hyphens:auto; overflow-wrap:break-word; }
 }
+@media(max-width:700px){ html body .wy-slide h3{ hyphens:manual !important; -webkit-hyphens:manual !important; } }
