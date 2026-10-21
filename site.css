@@ -3962,3 +3962,15 @@ html body .hd-dec{ transform:none; animation:hdDecFade 1.2s 4.9s ease-in-out for
 @keyframes hdDecFade{ to{ opacity:1; } }
 html body .hd-fx{ animation:hdFx 1.4s 5.6s ease forwards; }
 html body .hd-hot{ animation-delay:calc(6.3s + var(--n) * .15s); }
+
+/* главный экран: блок с кнопками чуть выше, подальше от школы */
+html body .hd2{ padding-top:clamp(8px,1.6vh,22px) !important; }
+@media(min-width:901px){ html body .hd2-head{ gap:clamp(12px,1.6vh,18px) !important; } html body .hd2 .hd2-eyebrow{ margin-bottom:clamp(6px,1vh,12px); } }
+@media(min-width:901px){ html body .hd2{ justify-content:flex-start; } html body .hd2-art{ margin-top:auto; margin-bottom:auto; padding-top:clamp(120px,16vh,220px); } }
+
+/* вставка в заголовке: четыре цветных квадрата (как было) */
+.hd-chip--cube{ width:.92em !important; height:.92em !important; border-radius:0; overflow:visible; background:
+  linear-gradient(#0055FF,#0055FF) 0 0/calc(50% - .035em) calc(50% - .035em) no-repeat,
+  linear-gradient(#FB4903,#FB4903) 100% 0/calc(50% - .035em) calc(50% - .035em) no-repeat,
+  linear-gradient(#FFD21F,#FFD21F) 0 100%/calc(50% - .035em) calc(50% - .035em) no-repeat,
+  linear-gradient(#1FA24A,#1FA24A) 100% 100%/calc(50% - .035em) calc(50% - .035em) no-repeat !important; }
