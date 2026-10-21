@@ -4179,3 +4179,11 @@ a, button, summary, [role="button"], [role="link"], .arc-card{ -webkit-tap-highl
   html body .hd-dec{ animation:hdDecFade .6s calc(var(--dd) * .15) ease-in-out forwards; }
   html body .hd-fx{ animation:hdFx .6s 1.5s ease forwards; }
 }
+
+/* телефон: школа целиком по ширине экрана, больше воздуха между блоками */
+@media(max-width:900px){
+  html body .hd2-art .hd-svg{ width:100vw; margin-left:0; }
+  html body .hd2-art{ padding:clamp(40px,7svh,72px) 0 clamp(32px,5svh,56px); }
+  html body .hd2-head{ gap:28px !important; }
+  html body .hd2 .hd2-eyebrow{ margin-bottom:18px !important; }
+}
