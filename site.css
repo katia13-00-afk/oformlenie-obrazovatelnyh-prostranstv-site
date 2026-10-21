@@ -3996,3 +3996,24 @@ html body .hd-ground.hd-nf{ stroke-width:3.4; }
 html body .hd-win{ fill:url(#hdWinG); }
 html body .hd-gl{ fill:url(#hdDoorG); }
 html body .hd-glass{ stroke:#7C8C9C; }
+
+/* порядок прорисовки чертежа: оси → земля → контур → объёмы → проёмы → переплёты → цвет */
+html body .hd-ground{ --d:.15s !important; }
+html body .hd-wall{ --d:.6s !important; }
+html body .hd-seg{ --d:1.0s !important; }
+html body .hd-orange, html body .hd-back{ --d:1.35s !important; }
+html body .hd-col, html body .hd-pillar{ --d:1.8s !important; }
+html body .hd-glass{ --d:2.2s !important; }
+html body .hd-win, html body .hd-gl{ --d:2.6s !important; }
+html body .hd-nf.hd-thin{ --d:3.2s !important; }
+/* плоские чистые стёкла */
+html body .hd-win{ fill:#4A5868; }
+html body .hd-gl{ fill:#4D5B68; }
+html body .hd-glass{ fill:#8EA5BA; stroke:#6F8497; }
+/* логотип: каждая буква своего цвета */
+.logo svg path:nth-child(1), .logo svg path:nth-child(8){ fill:#0055FF !important; }
+.logo svg path:nth-child(3){ fill:#FB4903 !important; }
+.logo svg path:nth-child(2), .logo svg path:nth-child(5){ fill:#1FA24A !important; }
+.logo svg path:nth-child(6){ fill:#F2B300 !important; }
+.logo svg path:nth-child(4){ fill:#E5252A !important; }
+.logo svg path:nth-child(7){ fill:#0055FF !important; }
