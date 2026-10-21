@@ -4111,3 +4111,7 @@ html body footer .footer-cta .btn-primary{ margin-top:6px; }
   html body.menu-open .burger{ background:#F3F4F6 !important; } html body.menu-open .burger span{ background:#16191B !important; }
   html body header .burger{ position:relative; z-index:101; }
 }
+
+/* этапы работы: без разноцветной волнистой подложки, ровный фон карточки */
+html body #process .pr-card::before{ display:none !important; background:none !important; content:none !important; }
+html body #process .pr-card{ background:#F3F4F6 !important; }
