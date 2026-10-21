@@ -3799,3 +3799,6 @@ html body #process .pr-c5::before{ background-position:center 68% !important; }
   html body .hd2-cta .btn{ flex:0 0 auto; width:auto; gap:18px; }
   html body .hd2-art .hd-svg{ width:100vw; margin-left:0; }
 }
+@media(min-width:901px){
+  html body .hd2-art .hd-svg{ width:min(1200px,86vw); margin:0 auto; }
+}
