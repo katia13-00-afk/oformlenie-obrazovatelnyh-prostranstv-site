@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Days+One&display=swap&subset=cyrillic" rel="stylesheet">
 
-<link rel="stylesheet" href="site.css?v=53">
+<link rel="stylesheet" href="site.css?v=54">
 </head>
 <body>
 
@@ -1671,7 +1671,7 @@ function buildIso(wrap){
   function stripsAt(ms, grow){                          // ms от начала роста/сворачивания
     strips.forEach(function(s){ var k = Math.max(0, Math.min(1, (ms - s.delay) / 330)); k = 1 - Math.pow(1 - k, 3); setStrip(s, grow ? k : 1 - k); });
   }
-  var faceIdx = 0, FADE_IN = 600, FADE_OUT = 520;
+  var faceIdx = 0, FADE_IN = 240, FADE_OUT = 240;
   var elL = document.getElementById('whyL'), elR = document.getElementById('whyR');
   function setText(i, on){ if (!elL) return; if (on){ elL.innerHTML = THESES[i][0]; elR.innerHTML = THESES[i][2]; } elL.classList.toggle('is-out', !on); elR.classList.toggle('is-out', !on); }
 
