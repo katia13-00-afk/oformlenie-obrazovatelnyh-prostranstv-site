@@ -4010,13 +4010,6 @@ html body .hd-nf.hd-thin{ --d:3.2s !important; }
 html body .hd-win{ fill:#4A5868; }
 html body .hd-gl{ fill:#4D5B68; }
 html body .hd-glass{ fill:#8EA5BA; stroke:#6F8497; }
-/* логотип: каждая буква своего цвета */
-.logo svg path:nth-child(1), .logo svg path:nth-child(8){ fill:#0055FF !important; }
-.logo svg path:nth-child(3){ fill:#FB4903 !important; }
-.logo svg path:nth-child(2), .logo svg path:nth-child(5){ fill:#1FA24A !important; }
-.logo svg path:nth-child(6){ fill:#F2B300 !important; }
-.logo svg path:nth-child(4){ fill:#E5252A !important; }
-.logo svg path:nth-child(7){ fill:#0055FF !important; }
 
 /* заголовок: воздух до кнопок; вставка меньше и со скруглёнными углами */
 @media(min-width:901px){ html body .hd2-head{ gap:clamp(24px,3.4vh,38px) !important; } html body .hd2 .hd2-eyebrow{ margin-bottom:clamp(10px,1.5vh,18px); } }
