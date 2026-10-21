@@ -3814,3 +3814,23 @@ html body .hd2 .btn-ghost{ background:transparent !important; border:1px solid #
 html body .hd2 .btn-ghost .btn-arrow{ background:#F1F3F6 !important; }
 html body .hd2 .btn-ghost:hover{ background:#F1F3F6 !important; border-color:var(--ink); }
 @media(max-width:900px){ html body .hd2-cta .btn-primary{ order:-1; } }
+
+/* ───────── главный экран: кнопки-таблички (как плашки разделов) ───────── */
+html body .hd2 .hd2-cta{ gap:10px; }
+html body .hd2 .hd2-cta .btn{ --bc:#fff; --dot:var(--scr-g); --tile:#F3F4F6; --tile-ink:var(--ink);
+  display:inline-flex; align-items:stretch; justify-content:flex-start; gap:0; width:auto !important; min-height:0 !important; height:auto; flex:0 0 auto; padding:0 0 0 24px !important;
+  border:0 !important; border-radius:10px; overflow:hidden; white-space:nowrap;
+  font-family:var(--f-sign); font-size:14px; font-weight:600; letter-spacing:-.005em; text-transform:none; line-height:1; color:var(--ink);
+  background:var(--dot) left 9px top 9px/6px 6px no-repeat, var(--dot) left 9px bottom 9px/6px 6px no-repeat, var(--bc) !important;
+  box-shadow:0 0 0 .5px rgba(0,30,90,.10), 0 2px 3px rgba(0,30,90,.08) !important; align-self:flex-start; }
+html body .hd2 .hd2-cta .btn:first-child{ line-height:1; }
+html body .hd2 .hd2-cta .btn .btn-arrow{ display:flex; align-items:center; justify-content:center; width:42px; height:auto; align-self:stretch; margin:0 0 0 18px; border-radius:0 !important; background:var(--tile) !important; box-shadow:none !important; }
+html body .hd2 .hd2-cta .btn .btn-arrow svg{ width:14px; height:14px; }
+html body .hd2 .hd2-cta .btn .btn-arrow svg path{ stroke:var(--tile-ink) !important; }
+html body .hd2 .hd2-cta .btn{ padding-top:13px !important; padding-bottom:13px !important; }
+html body .hd2 .hd2-cta .btn .btn-arrow{ margin-top:-13px; margin-bottom:-13px; }
+html body .hd2 .hd2-cta .btn-primary{ --bc:#0055FF; --dot:var(--scr-w); --tile:#0040C2; --tile-ink:#fff; color:#fff; }
+html body .hd2 .hd2-cta .btn-primary .btn-arrow svg path{ stroke:#fff !important; }
+html body .hd2 .hd2-cta .btn-primary:hover{ --bc:#0048D9; --tile:#0035A3; background:var(--dot) left 9px top 9px/6px 6px no-repeat, var(--dot) left 9px bottom 9px/6px 6px no-repeat, var(--bc) !important; }
+html body .hd2 .hd2-cta .btn-ghost:hover{ --bc:#fff; --tile:#E6E9EF; background:var(--dot) left 9px top 9px/6px 6px no-repeat, var(--dot) left 9px bottom 9px/6px 6px no-repeat, var(--bc) !important; }
+html body .hd2 .hd2-cta .btn:active{ transform:scale(.98) !important; }
