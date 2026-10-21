@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Days+One&display=swap&subset=cyrillic" rel="stylesheet">
 
-<link rel="stylesheet" href="site.css?v=51">
+<link rel="stylesheet" href="site.css?v=52">
 </head>
 <body>
 
@@ -1694,7 +1694,7 @@ function buildIso(wrap){
     if (!reduce){
       if (phase === 'hold'){
         var ht = now - phaseT;
-        /* заливка швов отключена: полосы между клетками остаются видимыми */
+        stripsAt(9999, true);   /* на неподвижной лицевой грани швы закрыты: цвет сплошной */
         if (ht > HOLD){ strips.forEach(function(s){ s.m.visible = false; }); nextPhase(now); }
       }
       else if (phase === 'spin'){ var k = Math.min(1, (now - phaseT) / SPIN); cube.rotation.y = spinFrom + (spinTo - spinFrom) * ease(k); if (k >= 1) nextPhase(now); }
