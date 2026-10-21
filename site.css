@@ -4065,3 +4065,4 @@ html body .hd2 .hd2-eyebrow::before{ width:.55em; height:.55em; border-radius:50
 /* блок заголовка: отступ от шапки и больше воздуха до кнопок */
 html body .hd2{ padding-top:clamp(40px,7.5vh,96px) !important; }
 @media(min-width:901px){ html body .hd2-head{ gap:clamp(30px,4.4vh,52px) !important; } }
+html body .hd2 .hd2-eyebrow{ text-transform:uppercase !important; letter-spacing:.08em !important; font-size:clamp(12px,.85vw,15px) !important; font-weight:600 !important; }
