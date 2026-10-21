@@ -3930,3 +3930,13 @@ html body .cookie .btn{ --bc:#0055FF; color:#fff; }
   .s3d-m{ display:flex; flex-direction:column; gap:14px; text-decoration:none; align-items:flex-start; }
   .s3d-m-img{ display:block; width:100%; aspect-ratio:16/10; border-radius:20px; background-size:cover; background-position:center; }
 }
+
+/* вставки в заголовке: ровно по строке */
+html body .hd2 h1 .nw{ white-space:nowrap; }
+.hd-chip{ display:inline-block; vertical-align:-.1em; height:.92em; margin:0 .06em; border-radius:.2em; overflow:hidden; line-height:1; }
+.hd-chip--cube{ width:.92em; background:
+  linear-gradient(#0055FF,#0055FF) 0 0/calc(50% - .035em) calc(50% - .035em) no-repeat,
+  linear-gradient(#FB4903,#FB4903) 100% 0/calc(50% - .035em) calc(50% - .035em) no-repeat,
+  linear-gradient(#FFD21F,#FFD21F) 0 100%/calc(50% - .035em) calc(50% - .035em) no-repeat,
+  linear-gradient(#1FA24A,#1FA24A) 100% 100%/calc(50% - .035em) calc(50% - .035em) no-repeat; border-radius:0; overflow:visible; }
+.hd-chip--photo{ width:1.7em; background:#E9ECF0 url(img/main/chip-otkrytie.jpg) center 62%/cover no-repeat; }
