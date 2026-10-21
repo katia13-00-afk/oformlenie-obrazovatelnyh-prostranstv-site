@@ -3802,3 +3802,14 @@ html body #process .pr-c5::before{ background-position:center 68% !important; }
 @media(min-width:901px){
   html body .hd2-art .hd-svg{ width:min(1200px,86vw); margin:0 auto; }
 }
+
+/* ───────── главный экран: плоские кнопки без объёма ───────── */
+html body .hd2 .btn, html body .hd2 .btn:active, html body .hd2 .btn .btn-arrow, html body .hd2 .btn:active .btn-arrow{ box-shadow:none !important; }
+html body .hd2 .btn:active{ transform:scale(.98) !important; }
+html body .hd2 .btn:active .btn-arrow{ transform:none !important; }
+html body .hd2 .btn-primary{ background:#0055FF !important; border:1px solid #0055FF; }
+html body .hd2 .btn-primary:hover{ background:#0040C2 !important; border-color:#0040C2; }
+html body .hd2 .btn-primary .btn-arrow{ background:#fff !important; }
+html body .hd2 .btn-ghost{ background:transparent !important; border:1px solid #CBD1DA; }
+html body .hd2 .btn-ghost .btn-arrow{ background:#F1F3F6 !important; }
+html body .hd2 .btn-ghost:hover{ background:#F1F3F6 !important; border-color:var(--ink); }
