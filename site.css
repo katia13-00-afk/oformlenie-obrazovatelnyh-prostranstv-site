@@ -4149,3 +4149,7 @@ html body #process .pr-card{ background:#F3F4F6 !important; }
   .t-hint span{ display:inline-block; animation:tHint 1.4s ease-in-out infinite; }
   @keyframes tHint{ 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(6px); } }
 }
+
+/* отзывчивость на касание: без задержки и серых вспышек */
+a, button, summary, [role="button"], [role="link"], .arc-card{ -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+@media(max-width:700px){ .arc-btn{ width:44px !important; height:44px !important; } }
