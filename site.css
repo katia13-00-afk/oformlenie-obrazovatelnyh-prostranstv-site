@@ -3834,3 +3834,6 @@ html body .hd2 .hd2-cta .btn-primary .btn-arrow svg path{ stroke:#fff !important
 html body .hd2 .hd2-cta .btn-primary:hover{ --bc:#0048D9; --tile:#0035A3; background:var(--dot) left 9px top 9px/6px 6px no-repeat, var(--dot) left 9px bottom 9px/6px 6px no-repeat, var(--bc) !important; }
 html body .hd2 .hd2-cta .btn-ghost:hover{ --bc:#fff; --tile:#E6E9EF; background:var(--dot) left 9px top 9px/6px 6px no-repeat, var(--dot) left 9px bottom 9px/6px 6px no-repeat, var(--bc) !important; }
 html body .hd2 .hd2-cta .btn:active{ transform:scale(.98) !important; }
+/* кнопки-таблички: без «шурупов», шрифт текста тоньше */
+html body .hd2 .hd2-cta .btn, html body .hd2 .hd2-cta .btn-primary:hover, html body .hd2 .hd2-cta .btn-ghost:hover{ background:var(--bc) !important; }
+html body .hd2 .hd2-cta .btn{ padding-left:20px !important; font-family:var(--f-text); font-weight:500; letter-spacing:0; }
