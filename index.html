@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Days+One&display=swap&subset=cyrillic" rel="stylesheet">
 
-<link rel="stylesheet" href="site.css?v=55">
+<link rel="stylesheet" href="site.css?v=56">
 </head>
 <body>
 
@@ -1695,13 +1695,13 @@ function buildIso(wrap){
       if (phase === 'hold'){
         var ht = now - phaseT;
         stripsAt(9999, true);   /* на неподвижной лицевой грани швы закрыты: цвет сплошной */
-        stripMat.opacity = Math.max(0, Math.min(1, Math.min(.4 + .6 * ht / FADE_IN, (HOLD - ht) / FADE_OUT)));
+        stripMat.opacity = Math.max(0, Math.min(1, Math.min(.55 + .45 * ht / FADE_IN, (HOLD - ht) / FADE_OUT)));
         if (ht > HOLD){ strips.forEach(function(s){ s.m.visible = false; }); nextPhase(now); }
       }
       else if (phase === 'spin'){ var k = Math.min(1, (now - phaseT) / SPIN); cube.rotation.y = spinFrom + (spinTo - spinFrom) * ease(k); if (k >= 1) nextPhase(now); }
       else {
         if (!cur && queue.length) beginMove(queue.shift(), now);
-        if (cur){ var q = Math.min(1, (now - cur.t0) / cur.dur); cur.pv.rotation[cur.mv.a] = cur.mv.d * Math.PI/2 * ease(q); if (phase === 'solve' && !queue.length && q > .4){ stripMat.map = TEX[ORDER[(faceIdx + 1) % 4]]; stripMat.needsUpdate = true; stripsAt(9999, true); stripMat.opacity = (q - .4) / .6 * .4; } if (q >= 1) endMove(); }
+        if (cur){ var q = Math.min(1, (now - cur.t0) / cur.dur); cur.pv.rotation[cur.mv.a] = cur.mv.d * Math.PI/2 * ease(q); if (phase === 'solve' && queue.length <= 1 && (queue.length === 0 || q > .5)){ stripMat.map = TEX[ORDER[(faceIdx + 1) % 4]]; stripMat.needsUpdate = true; stripsAt(9999, true); stripMat.opacity = queue.length ? (q - .5) / .5 * .15 : .15 + q * .4; } if (q >= 1) endMove(); }
         if (!cur && !queue.length) nextPhase(now);
       }
     }
