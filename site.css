@@ -4100,3 +4100,14 @@ html body footer .footer-cta .btn-primary{ margin-top:6px; }
   html body .hd2 .hd2-cta .btn .btn-arrow{ margin-top:-1em; margin-bottom:-1em; width:3.2em; }
   html body .hd2-art{ margin:12px 0 0 !important; padding-top:0 !important; }
 }
+
+/* ───────── телефон: светлое меню ───────── */
+@media(max-width:900px){
+  html body header nav{ background:#fff !important; justify-content:flex-start; padding-top:110px !important; }
+  html body header nav a{ color:#16191B !important; border-bottom:1px solid #E8EBF0; font-size:22px !important; padding:18px 0 !important; }
+  html body header nav a.is-active{ color:#16191B !important; background:none !important; box-shadow:none !important; }
+  html body header nav a.nav-cta{ display:flex !important; justify-content:space-between; width:100%; margin:28px 0 0 !important; padding:18px 0 18px 22px !important; font-size:18px !important; color:#fff !important; background:#0055FF !important; border:0 !important; border-radius:14px !important; text-transform:none !important; letter-spacing:0 !important; }
+  html body header nav a.nav-cta svg{ display:block !important; width:20px; height:20px; margin:-18px 0; padding:0 22px; box-sizing:content-box; align-self:stretch; height:auto; background:#0040C2; }
+  html body.menu-open .burger{ background:#F3F4F6 !important; } html body.menu-open .burger span{ background:#16191B !important; }
+  html body header .burger{ position:relative; z-index:101; }
+}
