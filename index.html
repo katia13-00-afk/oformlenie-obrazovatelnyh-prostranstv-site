@@ -1576,7 +1576,7 @@ function buildIso(wrap){
     sh.lineTo(-h, s/2); sh.quadraticCurveTo(-s/2, s/2, -s/2, h); sh.lineTo(-s/2, -h); sh.quadraticCurveTo(-s/2, -s/2, -h, -s/2);
     var g = new THREE.ExtrudeGeometry(sh, { depth:S - 2*r, bevelEnabled:true, bevelThickness:r, bevelSize:r, bevelSegments:3, curveSegments:4 }); g.center(); return g; }
   var body = new THREE.MeshStandardMaterial({ color:new THREE.Color('#E9ECF0').convertSRGBToLinear(), roughness:.55 });
-  var bodyGeo = rbox(.985, .022), CELL = 1.0, ST = .93;
+  var bodyGeo = rbox(1.0, .006), CELL = 1.0, ST = .94;
   // ориентация и проекция UV для каждой грани
   var F = {
     pz:{ n:[0,0,1],  r:[0,0,0],            uv:function(p){ return [p.x, p.y]; } },
@@ -1600,7 +1600,7 @@ function buildIso(wrap){
       var q = f.uv(p), u0 = (q[0] + 1.5 - ST/2) / 3, v0 = (q[1] + 1.5 - ST/2) / 3, du = ST / 3;
       var geo = new THREE.PlaneGeometry(ST, ST), uv = geo.attributes.uv;
       for (var i = 0; i < uv.count; i++) uv.setXY(i, u0 + uv.getX(i)*du, v0 + uv.getY(i)*du);
-      var m = new THREE.Mesh(geo, MAT[k]); m.receiveShadow = true; m.position.set(f.n[0]*.4945, f.n[1]*.4945, f.n[2]*.4945); m.rotation.set(f.r[0], f.r[1], f.r[2]); g.add(m);
+      var m = new THREE.Mesh(geo, MAT[k]); m.receiveShadow = true; m.position.set(f.n[0]*.5012, f.n[1]*.5012, f.n[2]*.5012); m.rotation.set(f.r[0], f.r[1], f.r[2]); g.add(m);
     });
     g.position.set(X*CELL, Y*CELL, Z*CELL); cube.add(g); cubies.push(g);
   }
