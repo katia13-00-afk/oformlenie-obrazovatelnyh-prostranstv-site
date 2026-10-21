@@ -4225,3 +4225,33 @@ a, button, summary, [role="button"], [role="link"], .arc-card{ -webkit-tap-highl
   html body .t-expand{ display:inline-flex; align-items:center; min-height:44px; }
   html body footer .footer-top{ row-gap:24px; }
 }
+
+/* ═══════════ телефон: проход по секциям — остальные блоки на ту же сетку ═══════════ */
+@media(max-width:700px){
+  /* статистика и этапы: карточки через 16, внутри 20 */
+  html body #stats2 .cube{ gap:16px !important; }
+  html body #stats2 .cf{ padding:20px 18px !important; }
+  html body #process .pr-split .pr-row, html body #process .pr-row{ gap:16px !important; }
+  html body #process .pr-split{ gap:16px !important; }
+  html body #process .pr-split .pr-card{ padding:20px !important; gap:12px !important; }
+  html body #process .pr-card p{ line-height:1.5 !important; }
+
+  /* FAQ: вопросы через 16, блок «Не нашли вопрос» отделён */
+  html body #faq .faq-layout{ gap:32px !important; }
+  html body #faq .faq-item{ margin-bottom:16px !important; }
+  html body #faq .faq-item summary{ min-height:64px; }
+  html body #faq .faq-item:last-of-type{ margin-bottom:0 !important; }
+
+  /* отзывы */
+  html body #testimonials .t-track{ gap:16px !important; }
+
+  /* форма: крупные подписи, высокие поля, кнопка на всю ширину */
+  html body #contact .ct-side{ gap:24px; }
+  html body #contact h2{ margin-bottom:12px !important; }
+  html body #contact .ct-fields{ display:grid; gap:24px; margin-bottom:24px; }
+  html body #contact .form-row label{ display:block; margin-bottom:8px; font-size:14px !important; color:#5B6472; }
+  html body #contact .form-row input{ min-height:48px; font-size:17px; padding-top:8px; padding-bottom:8px; }
+  html body #contact .consent{ display:flex; gap:12px; align-items:flex-start; margin:0 0 24px; font-size:14px; line-height:1.45; }
+  html body #contact .consent input{ flex:none; width:24px; height:24px; margin-top:0; }
+  html body #contact .ct-form .btn-primary{ width:100%; justify-content:space-between; min-height:56px; margin-top:0; }
+}
