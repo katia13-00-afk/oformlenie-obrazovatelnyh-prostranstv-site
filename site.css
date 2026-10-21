@@ -4074,6 +4074,13 @@ html body .hd-tag-b u::before, html body .hd-tag-b u::after{ width:.8em; height:
 html body .hd-tag-b:hover{ background:color-mix(in srgb, var(--t) 78%, var(--c)); }
 html body .hd-tag.is-open .hd-tag-b{ background:#fff; box-shadow:0 0 0 1.5px var(--c) !important; }
 
+/* интерактивные точки на школе — большая зона клика для десктопа */
+@media(min-width:901px){
+  html body .hd-hot{ pointer-events:auto; cursor:pointer; transition:transform .2s; }
+  html body .hd-hot:hover{ transform:scale(1.32); }
+  html body .hd-hot:active{ transform:scale(0.95); }
+}
+
 /* светлый футер в гамме сайта */
 html body footer{ background:#F3F4F6 !important; color:#16191B !important; }
 html body footer .logo svg path{ fill:#3377FF !important; }
@@ -4270,4 +4277,32 @@ a, button, summary, [role="button"], [role="link"], .arc-card{ -webkit-tap-highl
 /* телефон: настоящее здание (кадр задаёт скрипт в index.html), по ширине экрана с полями, края не вылезают */
 @media(max-width:900px){
   html body .hd2-art .hd-svg{ width:calc(100vw - 40px); margin:0 20px; overflow:hidden !important; }
+}
+
+/* пункты комплексного оформления */
+.pgx-steps{ margin:0; padding:0; list-style:none; counter-reset:st; display:grid; gap:4px 16px; font-size:15px; line-height:1.4; color:#5B6472; max-height:0; opacity:0; overflow:hidden; transition:max-height .45s ease, opacity .35s ease, margin .45s ease; }
+.pgx-steps li{ counter-increment:st; display:flex; gap:10px; }
+.pgx-steps li::before{ content:counter(st); flex:none; width:20px; height:20px; border-radius:50%; background:#FB4903; color:#fff; font-size:11px; font-weight:700; display:grid; place-items:center; margin-top:1px; }
+html body .pgx-item.is-on .pgx-steps{ max-height:20em; opacity:1; margin-top:10px; }
+
+/* «Почему нас выбирают»: без слайдера, сетка карточек */
+html body #whyus .wy-ctl{ display:none !important; }
+html body #whyus .wy-track{ display:grid !important; grid-template-columns:repeat(12,1fr); gap:clamp(12px,1.4vw,20px) !important; overflow:visible !important; scroll-snap-type:none; padding:0 !important; }
+html body #whyus .wy-slide{ flex:none !important; grid-column:span 3; height:clamp(220px,19vw,280px) !important; scroll-snap-align:none; }
+html body #whyus .wy-slide:nth-child(n+5){ grid-column:span 4; }
+html body #whyus .wy-slide h3{ font-size:clamp(18px,1.5vw,22px) !important; }
+@media(max-width:900px){
+  html body #whyus .wy-track{ grid-template-columns:repeat(2,1fr); }
+  html body #whyus .wy-slide, html body #whyus .wy-slide:nth-child(n+5){ grid-column:span 1; height:200px !important; }
+  html body #whyus .wy-slide:last-child{ grid-column:1 / -1; height:150px !important; }
+}
+@media(max-width:520px){
+  html body #whyus .wy-track{ gap:10px !important; }
+  html body #whyus .wy-slide, html body #whyus .wy-slide:nth-child(n+5){ height:176px !important; padding:16px !important; }
+  html body #whyus .wy-slide h3{ font-size:15px !important; }
+  html body #whyus .wy-slide:last-child{ height:130px !important; }
+}
+@media(max-width:520px){
+  html body #whyus .wy-slide, html body #whyus .wy-slide:nth-child(n+5){ padding:14px !important; }
+  html body #whyus .wy-slide h3{ font-size:13.5px !important; line-height:1.25 !important; overflow-wrap:normal !important; word-break:normal !important; hyphens:auto !important; -webkit-hyphens:auto !important; }
 }

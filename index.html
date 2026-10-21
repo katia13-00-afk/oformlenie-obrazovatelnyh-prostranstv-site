@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Days+One&display=swap&subset=cyrillic" rel="stylesheet">
 
-<link rel="stylesheet" href="site.css?v=101">
+<link rel="stylesheet" href="site.css?v=104">
 </head>
 <body>
 
@@ -362,7 +362,7 @@
         </button></li>
         <li class="pgx-item" data-i="2"><button type="button" class="pgx-btn" aria-controls="pgxView">
           <span class="pgx-n">03</span>
-          <span class="pgx-txt"><span class="pgx-t">Комплексное оформление школ «под ключ»</span><span class="pgx-p">Школа №18, Обнинск</span><span class="pgx-d">От идеи до реализации</span></span>
+          <span class="pgx-txt"><span class="pgx-t">Комплексное оформление школ «под ключ»</span><span class="pgx-p">Школа №18, Обнинск</span><span class="pgx-d">От идеи до реализации</span><ol class="pgx-steps"><li>Анализ школы и разработка концепции</li><li>Графический дизайн и единый стиль</li><li>3D-визуализация и согласование</li><li>Производство: УФ-печать, вывески, навигация</li><li>Муралы и роспись стен</li><li>Монтаж и установка</li><li>Сдача объекта и поддержка</li></ol></span>
         </button></li>
         <li class="pgx-item" data-i="3"><button type="button" class="pgx-btn" aria-controls="pgxView">
           <span class="pgx-n">04</span>
@@ -380,6 +380,10 @@
           <span class="pgx-n">07</span>
           <span class="pgx-txt"><span class="pgx-t">Таблички, навигационные указатели</span><span class="pgx-p">Школа «На заре», Малоярославец</span><span class="pgx-d">Качественно и на долгие годы</span></span>
         </button></li>
+        <li class="pgx-item" data-i="7"><button type="button" class="pgx-btn" aria-controls="pgxView">
+          <span class="pgx-n">08</span>
+          <span class="pgx-txt"><span class="pgx-t">Оформление музеев и тематических экспозиций</span><span class="pgx-p">Музейные и тематические пространства</span><span class="pgx-d">Рассказываем историю через пространство</span></span>
+        </button></li>
       </ol>
       <div class="pgx-view" id="pgxView">
         <div class="pgx-slide is-on" style="background-image:url('img/main/cover-school29.jpg');" role="img" aria-label="Концепция и дизайн образовательного пространства"></div>
@@ -389,9 +393,10 @@
         <div class="pgx-slide" style="background-image:url('img/na-zare/66.jpg');" role="img" aria-label="Муралы и роспись стен"></div>
         <div class="pgx-slide" style="background-image:url('img/na-zare/03.jpg');" role="img" aria-label="Информационные стенды"></div>
         <div class="pgx-slide" style="background-image:url('img/na-zare/47.jpg');" role="img" aria-label="Таблички, навигационные указатели"></div>
+        <div class="pgx-slide" style="background-image:url('img/main/cover-school29.jpg');" role="img" aria-label="Оформление музеев и тематических экспозиций"></div>
         <div class="pgx-over">
           <p class="pgx-cap"><span class="pgx-cap-t">Концепция и дизайн образовательного пространства</span><span class="pgx-cap-p">Школа №29 «Новые созвездия», Калуга</span></p>
-          <div class="pgx-bars"><span class="pgx-c pgx-c1">01</span><button type="button" class="pgx-bar is-on" data-i="0" aria-label="Фото 1"><i></i></button><button type="button" class="pgx-bar" data-i="1" aria-label="Фото 2"><i></i></button><button type="button" class="pgx-bar" data-i="2" aria-label="Фото 3"><i></i></button><button type="button" class="pgx-bar" data-i="3" aria-label="Фото 4"><i></i></button><button type="button" class="pgx-bar" data-i="4" aria-label="Фото 5"><i></i></button><button type="button" class="pgx-bar" data-i="5" aria-label="Фото 6"><i></i></button><button type="button" class="pgx-bar" data-i="6" aria-label="Фото 7"><i></i></button><span class="pgx-c">07</span></div>
+          <div class="pgx-bars"><span class="pgx-c pgx-c1">01</span><button type="button" class="pgx-bar is-on" data-i="0" aria-label="Фото 1"><i></i></button><button type="button" class="pgx-bar" data-i="1" aria-label="Фото 2"><i></i></button><button type="button" class="pgx-bar" data-i="2" aria-label="Фото 3"><i></i></button><button type="button" class="pgx-bar" data-i="3" aria-label="Фото 4"><i></i></button><button type="button" class="pgx-bar" data-i="4" aria-label="Фото 5"><i></i></button><button type="button" class="pgx-bar" data-i="5" aria-label="Фото 6"><i></i></button><button type="button" class="pgx-bar" data-i="6" aria-label="Фото 7"><i></i></button><button type="button" class="pgx-bar" data-i="7" aria-label="Фото 8"><i></i></button><span class="pgx-c">08</span></div>
         </div>
       </div>
     </div>
@@ -1890,6 +1895,19 @@ function buildIso(wrap){
   });
   document.addEventListener('click',function(e){ if(!e.target.closest('.hd-tag')) closeAll(); });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeAll(); });
+})();
+</script>
+<script>
+/* точки на школе — клик на точку открывает информацию */
+(function(){
+  var hots=document.querySelectorAll('.hd-hot');
+  hots.forEach(function(hot){
+    hot.addEventListener('click',function(e){
+      e.stopPropagation();
+      var btn=hot.querySelector('.hd-tag-b');
+      if(btn) btn.click();
+    });
+  });
 })();
 </script>
 <script>
