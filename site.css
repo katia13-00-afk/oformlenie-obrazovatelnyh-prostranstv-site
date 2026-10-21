@@ -4044,3 +4044,6 @@ html body .hd-hot.below .hd-tag{ animation-name:hdTagPopB; }
   0%{ opacity:0; transform:translateX(-50%) translateY(-14px) scale(.65); }
   55%{ opacity:1; transform:translateX(-50%) translateY(4px) scale(1.05); }
   100%{ opacity:1; transform:translateX(-50%) translateY(0) scale(1); } }
+
+/* воздух между кнопками и школой — по масштабу самой школы, чтобы на любом экране не упиралась */
+@media(min-width:901px){ html body .hd2-art{ padding-top:max(150px, calc(min(86vw,2100px) / 2400 * 330)); } }
