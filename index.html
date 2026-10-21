@@ -1892,5 +1892,18 @@ function buildIso(wrap){
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeAll(); });
 })();
 </script>
+<script>
+/* телефон: школа кадрируется по центральному корпусу, чтобы целиком влезала в экран */
+(function(){
+  var svg=document.querySelector('.hd-svg'); if(!svg) return;
+  var mq=window.matchMedia('(max-width:900px)');
+  function fit(){
+    var m=mq.matches;
+    svg.setAttribute('viewBox', m ? '666 490 1068 450' : '0 525 2400 395');
+    svg.setAttribute('width', m ? 1068 : 2400); svg.setAttribute('height', m ? 450 : 395);
+  }
+  fit(); (mq.addEventListener ? mq.addEventListener('change',fit) : mq.addListener(fit));
+})();
+</script>
 </body>
 </html>

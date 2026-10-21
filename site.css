@@ -4255,3 +4255,14 @@ a, button, summary, [role="button"], [role="link"], .arc-card{ -webkit-tap-highl
   html body #contact .consent input{ flex:none; width:24px; height:24px; margin-top:0; }
   html body #contact .ct-form .btn-primary{ width:100%; justify-content:space-between; min-height:56px; margin-top:0; }
 }
+
+/* телефон: кадр по центральному корпусу с вывеской (viewBox задаёт скрипт), края не вылезают */
+@media(max-width:900px){
+  html body .hd2-art .hd-svg{ width:calc(100vw - 40px); margin:0 20px; overflow:hidden !important; }
+}
+
+/* телефон: карточки этапов без теней, чтобы не сливались со следующей */
+@media(max-width:700px){
+  html body #process .pr-card, html body #process .pr-split .pr-card{ box-shadow:none !important; filter:none !important; }
+  html body #process .pr-card::after{ display:none !important; }
+}
