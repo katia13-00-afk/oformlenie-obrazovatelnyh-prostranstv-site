@@ -3846,3 +3846,33 @@ html body .hd2 .hd2-cta .btn{ font-size:clamp(14px,1vw,21px); padding:.95em 0 .9
 html body .hd2 .hd2-cta .btn .btn-arrow{ width:3em; margin:-.95em 0 -.95em 1.3em; }
 html body .hd2 .hd2-cta .btn .btn-arrow svg{ width:1em; height:1em; }
 @media(min-width:901px){ html body .hd2-art .hd-svg{ width:min(74vw,1900px); } }
+
+/* ───────── главный экран: чертёж-сцена с направляющими и хотспотами ───────── */
+html body .hd2 .hd2-head{ justify-items:center; text-align:center; }
+html body .hd2 .hd2-text{ display:flex; flex-direction:column; align-items:center; }
+html body .hd2 h1{ max-width:min(1300px,92vw); font-size:clamp(28px,3.5vw,76px); }
+html body .hd2 .hd2-cta{ justify-content:center; align-self:center; }
+html body .hd2 .hd2-cta .btn{ align-self:auto; }
+.hd-chip{ display:inline-block; vertical-align:-.12em; height:1.02em; margin:0 .08em; border-radius:.22em; overflow:hidden; }
+.hd-chip--cube{ width:1.02em; display:inline-grid; grid-template:1fr 1fr / 1fr 1fr; gap:.07em; padding:0; background:transparent; border-radius:.2em; }
+.hd-chip--cube i{ display:block; border-radius:.08em; }
+.hd-chip--cube i:nth-child(1){ background:#0055FF; } .hd-chip--cube i:nth-child(2){ background:#FB4903; }
+.hd-chip--cube i:nth-child(3){ background:#FFD21F; } .hd-chip--cube i:nth-child(4){ background:#1FA24A; }
+.hd-chip--photo{ width:1.9em; background:#E9ECF0 url(img/main/hero-school.jpg) center 40%/cover no-repeat; }
+
+.hd-stage{ --u:calc(min(74vw,1900px) / 2400); position:relative; width:min(74vw,1900px); margin:0 auto; }
+html body .hd2-art .hd-svg{ width:100%; margin:0; }
+.hd-guides{ opacity:0; animation:hdFx 1.2s 6.6s ease forwards; }
+.hd-gl-d line{ stroke:#C4CBD6; stroke-width:1.2; stroke-dasharray:7 7; vector-effect:non-scaling-stroke; }
+.hd-gl-x path{ stroke:#8A93A1; stroke-width:1.4; fill:none; vector-effect:non-scaling-stroke; }
+.hd-hots{ position:absolute; inset:0; pointer-events:none; z-index:3; line-height:1; }
+.hd-hot{ position:absolute; width:14px; height:14px; margin:-7px 0 0 -7px; border-radius:4px; background:var(--c); box-shadow:0 0 0 2.5px #fff, 0 0 0 3.5px rgba(22,25,27,.12);
+  opacity:0; animation:hdTag .5s cubic-bezier(.2,.8,.2,1) calc(7s + var(--n) * .18s) forwards; }
+.hd-hot::after{ content:""; position:absolute; left:50%; bottom:100%; width:1px; height:calc(var(--u) * var(--lh-x, 100)); background:linear-gradient(var(--c),var(--c)); transform:translateX(-50%); display:none; }
+.hd-tag{ position:absolute; left:50%; bottom:calc(100% + var(--u) * var(--lh)); transform:translateX(-50%); display:inline-flex; align-items:center; gap:.6em; padding:.55em 1.05em .55em .55em; border-radius:.9em; background:var(--t);
+  font-family:var(--f-text); font-style:normal; font-weight:500; font-size:clamp(12px,.95vw,19px); color:var(--ink); white-space:nowrap; box-shadow:0 1px 2px rgba(22,25,27,.06); }
+.hd-tag i{ width:1.45em; height:1.45em; border-radius:.45em; background:var(--c); flex:none; }
+.hd-tag::after{ content:""; position:absolute; left:50%; top:100%; width:0; height:calc(var(--u) * var(--lh) - 7px); border-left:1.2px dashed var(--c); transform:translateX(-50%); }
+@keyframes hdTag{ to{ opacity:1; } }
+@media(max-width:900px){ .hd-hots, .hd-guides{ display:none; } .hd-stage{ width:auto; } html body .hd2-art .hd-svg{ width:250vw; margin-left:-75vw; } }
+@media(prefers-reduced-motion:reduce){ .hd-hot, .hd-guides{ animation-duration:.01s !important; animation-delay:0s !important; } }
