@@ -4153,3 +4153,13 @@ html body #process .pr-card{ background:#F3F4F6 !important; }
 /* отзывчивость на касание: без задержки и серых вспышек */
 a, button, summary, [role="button"], [role="link"], .arc-card{ -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
 @media(max-width:700px){ .arc-btn{ width:44px !important; height:44px !important; } }
+
+/* «Почему нас выбирают» на телефоне: вертикальные прямоугольники, крупный текст */
+@media(max-width:700px){
+  html body .wy-slide{ flex:0 0 74% !important; height:380px !important; padding:22px !important; border-radius:24px !important; }
+  html body .wy-n{ font-size:13px !important; }
+  html body .wy-ico{ width:56px !important; height:56px !important; border-radius:16px !important; margin-bottom:18px !important; }
+  html body .wy-ico svg{ width:30px !important; height:30px !important; }
+  html body .wy-slide h3{ font-size:26px !important; line-height:1.18 !important; letter-spacing:-.015em; }
+  html body .wy-track{ gap:14px !important; }
+}
