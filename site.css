@@ -3788,6 +3788,6 @@ html body #process .pr-c4::before{ background-position:center 38% !important; tr
 html body #process .pr-c5::before{ background-position:center 68% !important; }
 
 /* ───────── чертёж главного экрана: тени и объём проявляются после заливки ───────── */
-.hd-fx{ opacity:0; animation:hdFx 1.4s 5.9s ease forwards; }
+.hd-fx{ opacity:0; animation:hdFx 1.6s 6.8s ease forwards; }
 @keyframes hdFx{ to{ opacity:1; } }
 @media(prefers-reduced-motion:reduce){ .hd-fx{ animation-duration:.01s !important; animation-delay:0s !important; } }
