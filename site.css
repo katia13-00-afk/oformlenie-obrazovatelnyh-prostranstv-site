@@ -4047,3 +4047,8 @@ html body .hd-hot.below .hd-tag{ animation-name:hdTagPopB; }
 
 /* воздух между кнопками и школой — по масштабу самой школы, чтобы на любом экране не упиралась */
 @media(min-width:901px){ html body .hd2-art{ padding-top:max(150px, calc(min(86vw,2100px) / 2400 * 330)); } }
+
+/* абзац «Это не просто красиво» — легче читать */
+html body #why .why-body{ font-weight:500 !important; font-size:clamp(24px,2.3vw,42px) !important; line-height:1.32 !important; letter-spacing:-.012em !important; color:#22272B; max-width:34ch; }
+html body #why .why-body mark.ac{ font-weight:600; }
+@media(max-width:700px){ html body #why .why-body{ font-size:clamp(20px,5.6vw,24px) !important; line-height:1.34 !important; } }
