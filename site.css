@@ -3991,3 +3991,8 @@ html body .hd-ground.hd-nf{ stroke-width:3.4; }
 .hd-lvl{ stroke:#9AA2AF; stroke-width:1; stroke-dasharray:4 4; vector-effect:non-scaling-stroke; fill:none; }
 @media(max-width:900px){ .hd-levels{ display:none; } }
 .hd-chip--photo{ background:#E9ECF0 url(img/main/chip-school29.jpg) center 48%/cover no-repeat !important; }
+
+/* стёкла чертежа: отражение неба, глубина, блики */
+html body .hd-win{ fill:url(#hdWinG); }
+html body .hd-gl{ fill:url(#hdDoorG); }
+html body .hd-glass{ stroke:#7C8C9C; }
