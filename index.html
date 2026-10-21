@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Days+One&display=swap&subset=cyrillic" rel="stylesheet">
 
-<link rel="stylesheet" href="site.css?v=52">
+<link rel="stylesheet" href="site.css?v=53">
 </head>
 <body>
 
@@ -1649,7 +1649,7 @@ function buildIso(wrap){
     return g; }
   /* ползущие линии: 4 полосы по швам лицевой грани, в них та же картинка грани */
   var SEAM = .5, SW = .085, HALF = 1.47, strips = [];
-  var stripMat = new THREE.MeshStandardMaterial({ map:TEX.pz, roughness:.5, polygonOffset:true, polygonOffsetFactor:-4 });
+  var stripMat = new THREE.MeshStandardMaterial({ map:TEX.pz, roughness:.5, polygonOffset:true, polygonOffsetFactor:-4, transparent:true, opacity:0 });
   [['h', SEAM, 1], ['h', -SEAM, -1], ['v', -SEAM, 1], ['v', SEAM, -1]].forEach(function(d, i){
     var geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(12), 3));
@@ -1695,6 +1695,7 @@ function buildIso(wrap){
       if (phase === 'hold'){
         var ht = now - phaseT;
         stripsAt(9999, true);   /* на неподвижной лицевой грани швы закрыты: цвет сплошной */
+        stripMat.opacity = Math.max(0, Math.min(1, Math.min(ht / FADE_IN, (HOLD - ht) / FADE_OUT)));
         if (ht > HOLD){ strips.forEach(function(s){ s.m.visible = false; }); nextPhase(now); }
       }
       else if (phase === 'spin'){ var k = Math.min(1, (now - phaseT) / SPIN); cube.rotation.y = spinFrom + (spinTo - spinFrom) * ease(k); if (k >= 1) nextPhase(now); }
