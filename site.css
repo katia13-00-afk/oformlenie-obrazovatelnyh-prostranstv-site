@@ -4017,3 +4017,9 @@ html body .hd-glass{ fill:#8EA5BA; stroke:#6F8497; }
 .logo svg path:nth-child(6){ fill:#F2B300 !important; }
 .logo svg path:nth-child(4){ fill:#E5252A !important; }
 .logo svg path:nth-child(7){ fill:#0055FF !important; }
+
+/* заголовок: воздух до кнопок; вставка меньше и со скруглёнными углами */
+@media(min-width:901px){ html body .hd2-head{ gap:clamp(24px,3.4vh,38px) !important; } html body .hd2 .hd2-eyebrow{ margin-bottom:clamp(10px,1.5vh,18px); } }
+html body .hd2{ padding-top:clamp(14px,2.6vh,34px) !important; }
+.hd-chip--cube{ width:.7em !important; height:.7em !important; vertical-align:.02em !important; margin:0 .1em !important; overflow:visible !important; border-radius:0 !important;
+  background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%2241%22%20height%3D%2241%22%20rx%3D%2211%22%20fill%3D%22%230055FF%22/%3E%3Crect%20x%3D%2253%22%20y%3D%226%22%20width%3D%2241%22%20height%3D%2241%22%20rx%3D%2211%22%20fill%3D%22%23FB4903%22/%3E%3Crect%20x%3D%226%22%20y%3D%2253%22%20width%3D%2241%22%20height%3D%2241%22%20rx%3D%2211%22%20fill%3D%22%23FFD21F%22/%3E%3Crect%20x%3D%2253%22%20y%3D%2253%22%20width%3D%2241%22%20height%3D%2241%22%20rx%3D%2211%22%20fill%3D%22%231FA24A%22/%3E%3C/svg%3E") center/contain no-repeat !important; }
