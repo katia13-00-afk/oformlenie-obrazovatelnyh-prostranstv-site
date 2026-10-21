@@ -3974,3 +3974,20 @@ html body .hd2{ padding-top:clamp(8px,1.6vh,22px) !important; }
   linear-gradient(#FB4903,#FB4903) 100% 0/calc(50% - .035em) calc(50% - .035em) no-repeat,
   linear-gradient(#FFD21F,#FFD21F) 0 100%/calc(50% - .035em) calc(50% - .035em) no-repeat,
   linear-gradient(#1FA24A,#1FA24A) 100% 100%/calc(50% - .035em) calc(50% - .035em) no-repeat !important; }
+
+/* чертёж: иерархия толщины линий, как в архитектурных фасадах */
+html body .hd-sh{ stroke-width:1.1; }
+html body .hd-ground{ stroke-width:3.4; stroke:#3A4250; }
+html body .hd-wall{ stroke-width:2.2; }
+html body .hd-orange, html body .hd-seg, html body .hd-col, html body .hd-pillar, html body .hd-back{ stroke-width:1.5; }
+html body .hd-win, html body .hd-gl{ stroke-width:.9; }
+html body .hd-glass{ stroke-width:1.2 !important; }
+html body .hd-nf, html body .hd-thin{ stroke-width:.55; }
+html body .hd-ground.hd-nf{ stroke-width:3.4; }
+/* отметки уровней */
+.hd-levels{ opacity:0; animation:hdFx 1.2s .4s ease forwards; }
+.hd-lv path{ fill:#fff; stroke:#6B7584; stroke-width:1; vector-effect:non-scaling-stroke; }
+.hd-lv text{ fill:#6B7584; font:500 15px 'SFMono-Regular',Menlo,Consolas,monospace; letter-spacing:.02em; }
+.hd-lvl{ stroke:#9AA2AF; stroke-width:1; stroke-dasharray:4 4; vector-effect:non-scaling-stroke; fill:none; }
+@media(max-width:900px){ .hd-levels{ display:none; } }
+.hd-chip--photo{ background:#E9ECF0 url(img/main/chip-school29.jpg) center 48%/cover no-repeat !important; }
