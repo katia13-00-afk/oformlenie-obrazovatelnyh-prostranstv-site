@@ -4088,3 +4088,15 @@ html body footer .footer-bottom{ border-top:1px solid rgba(22,25,27,.10); color:
 html body footer .footer-legal a, html body footer .footer-legal span, html body footer .footer-bottom div{ color:#5B6472; }
 html body footer .footer-legal a:hover{ color:#0055FF; }
 html body footer .footer-cta .btn-primary{ margin-top:6px; }
+
+/* ───────── телефон: главный экран ───────── */
+@media(max-width:900px){
+  html body .hd2{ min-height:0 !important; padding-top:28px !important; padding-bottom:8px; justify-content:flex-start !important; }
+  html body .hd2 h1{ font-size:clamp(30px,9vw,40px) !important; line-height:1.08 !important; white-space:normal !important; max-width:none !important; }
+  html body .hd2 .hd2-eyebrow{ font-size:12px !important; letter-spacing:.06em !important; margin-bottom:10px !important; }
+  html body .hd2-head{ gap:20px !important; padding-left:20px; padding-right:20px; }
+  html body .hd2 .hd2-cta{ flex-direction:column !important; width:100%; gap:10px; align-items:stretch; }
+  html body .hd2 .hd2-cta .btn{ width:100% !important; justify-content:space-between; font-size:16px; padding-top:1em !important; padding-bottom:1em !important; }
+  html body .hd2 .hd2-cta .btn .btn-arrow{ margin-top:-1em; margin-bottom:-1em; width:3.2em; }
+  html body .hd2-art{ margin:12px 0 0 !important; padding-top:0 !important; }
+}
