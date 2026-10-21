@@ -3919,3 +3919,14 @@ html body .btn-ghost:hover{ --tile:#E6E9EF; }
 html body header #siteNav a.nav-cta{ display:inline-flex !important; align-items:stretch; gap:0 !important; padding:.62em 0 .62em 1.1em !important; border-radius:.6em !important; font-weight:500 !important; overflow:hidden; box-shadow:0 0 0 .5px rgba(0,30,90,.10), 0 2px 3px rgba(0,30,90,.08) !important; }
 html body header #siteNav a.nav-cta svg{ display:block !important; box-sizing:content-box; width:14px; height:14px; padding:0 .8em; margin-left:.9em; background:#0040C2; align-self:stretch; margin-top:-.62em; margin-bottom:-.62em; height:auto; }
 html body .cookie .btn{ --bc:#0055FF; color:#fff; }
+
+/* ───────── блок «Зайдите в школу»: 3D-сцена под главным экраном ───────── */
+.s3d{ padding:clamp(24px,4vw,64px) 0 clamp(24px,4vw,64px); }
+.s3d-frame{ position:relative; height:min(calc(100svh - 96px), 860px); min-height:520px; border-radius:24px; overflow:hidden; background:#fff; box-shadow:0 0 0 .5px rgba(0,30,90,.1), 0 24px 60px -34px rgba(0,30,90,.35); }
+.s3d-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
+.s3d-m{ display:none; }
+@media(max-width:900px){
+  .s3d-frame{ display:none; }
+  .s3d-m{ display:flex; flex-direction:column; gap:14px; text-decoration:none; align-items:flex-start; }
+  .s3d-m-img{ display:block; width:100%; aspect-ratio:16/10; border-radius:20px; background-size:cover; background-position:center; }
+}

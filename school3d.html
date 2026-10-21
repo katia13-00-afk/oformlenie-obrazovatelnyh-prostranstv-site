@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" class="">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -43,6 +43,12 @@ canvas{ display:block; width:100%; height:100%; }
 .card a{ align-self:flex-start; color:var(--blue); font-weight:600; text-decoration:none; } .card a:hover{ text-decoration:underline; }
 .card button{ all:unset; cursor:pointer; position:absolute; right:.7em; top:.55em; font-size:18px; color:var(--muted); }
 .note{ position:fixed; right:clamp(16px,3vw,48px); bottom:clamp(14px,2.6vh,30px); z-index:4; font-size:11px; color:#8A93A1; pointer-events:none; }
+.walk{ position:fixed; right:clamp(16px,3vw,48px); bottom:clamp(60px,9vh,90px); z-index:6; display:none; flex-direction:column; gap:8px; }
+.walk.on{ display:flex; }
+.walk button{ all:unset; cursor:pointer; width:44px; height:44px; border-radius:12px; background:#fff; text-align:center; line-height:44px; font-size:20px; box-shadow:0 0 0 .5px rgba(0,30,90,.12), 0 2px 3px rgba(0,30,90,.08); }
+.walk button:active{ background:#F1F3F6; }
+html.embed .home{ display:none; }
+html.embed .top h1{ font-size:clamp(20px,2vw,32px); }
 @media(max-width:700px){ .top p{ display:none; } .hint{ font-size:11px; } }
 </style>
 </head>
@@ -50,14 +56,16 @@ canvas{ display:block; width:100%; height:100%; }
 <div id="stage"></div>
 <div class="top"><h1>Школа изнутри</h1><p id="sub">Нажмите на подписи на здании: зайдите в коридор или кабинет и посмотрите, как работает навигация.</p></div>
 <a class="home" href="index.html">← На сайт</a>
+<div class="walk" id="walk"><button type="button" id="fw" aria-label="Вперёд">↑</button><button type="button" id="bw" aria-label="Назад">↓</button></div>
 <button class="back" id="back" type="button">← К зданию</button>
 <div class="hint" id="hint">Перетаскивайте, чтобы повернуть</div>
 <div class="note">Иллюстрация. Здание и интерьеры условные</div>
-<div class="card" id="card" role="dialog"><button type="button" id="cardX" aria-label="Закрыть">×</button><strong id="cT"></strong><em id="cP"></em><a href="index.html#project-gallery">Смотреть решения →</a></div>
+<div class="card" id="card" role="dialog"><button type="button" id="cardX" aria-label="Закрыть">×</button><strong id="cT"></strong><em id="cP"></em><a href="index.html#project-gallery" target="_top">Смотреть решения →</a></div>
 <div class="fade" id="fade"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+if(/[?&]embed=1/.test(location.search)) document.documentElement.classList.add('embed');
 (function(){
 var INK='#16191B', P={blue:'#0055FF',orange:'#FB4903',yellow:'#FFD21F',green:'#1FA24A',red:'#E5252A'};
 var TINT={blue:'#DCE8FF',orange:'#FFE2D5',yellow:'#FFF3C2',green:'#D9F2E0',red:'#FFDCDC'};
@@ -220,7 +228,7 @@ var DEF={
        {label:'Плакат',col:'green',pos:[4.15,1.55,-1.2],card:['Информационные стенды','Школа «На заре», Малоярославец']} ]
 };
 function setMode(m){ mode=m; clearHS(); DEF[m].forEach(function(d){ addHS(Object.assign({},d)); });
-  var inside=m!=='ext'; document.getElementById('back').classList.toggle('on',inside); document.getElementById('hint').textContent=m==='ext'?'Перетаскивайте, чтобы повернуть':(m==='cor'?'Колёсико — идти по коридору, перетаскивайте — осмотреться':'Перетаскивайте, чтобы осмотреться');
+  var inside=m!=='ext'; document.getElementById('back').classList.toggle('on',inside); document.getElementById('walk').classList.toggle('on',m==='cor'); document.getElementById('hint').textContent=m==='ext'?'Перетаскивайте, чтобы повернуть':(m==='cor'?'Кнопки справа — идти по коридору, перетаскивайте — осмотреться':'Перетаскивайте, чтобы осмотреться');
   document.getElementById('sub').textContent=m==='ext'?'Нажмите на подписи на здании: зайдите в коридор или кабинет и посмотрите, как работает навигация.':(m==='cor'?'Коридор: указатели, таблички, цвет этажа.':'Кабинет: табличка, плакат, дверь.');
   if(m==='cor'){ iy=0; ip=0; corZ=-1; } if(m==='cls'){ iy=0; ip=0; } }
 function cur(){ return mode==='ext'?ext.scene:(mode==='cor'?cor.scene:cls.scene); }
@@ -235,7 +243,11 @@ stage.addEventListener('pointermove',function(e){ if(!drag) return; var dx=e.cli
   if(mode==='ext'){ yaw=Math.max(-.95,Math.min(.95,yaw-dx*.004)); pitch=Math.max(.02,Math.min(.4,pitch+dy*.003)); }
   else { iy=Math.max(-.9,Math.min(.9,iy+dx*.004)); ip=Math.max(-.35,Math.min(.35,ip+dy*.003)); } });
 function up(){ drag=null; stage.classList.remove('drag'); } stage.addEventListener('pointerup',up); stage.addEventListener('pointercancel',up);
-window.addEventListener('wheel',function(e){ if(mode==='cor'&&!busy){ corZ=Math.max(-26,Math.min(-1,corZ-e.deltaY*.012)); e.preventDefault(); } },{passive:false});
+var EMBED=document.documentElement.classList.contains('embed');
+function walk(d){ if(mode==='cor'&&!busy) corZ=Math.max(-26,Math.min(-1,corZ-d)); }
+document.getElementById('fw').addEventListener('click',function(){ walk(2.5); });
+document.getElementById('bw').addEventListener('click',function(){ walk(-2.5); });
+window.addEventListener('wheel',function(e){ if(!EMBED&&mode==='cor'&&!busy){ corZ=Math.max(-26,Math.min(-1,corZ-e.deltaY*.012)); e.preventDefault(); } },{passive:false});
 
 /* ——— переходы ——— */
 function wait(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
@@ -247,7 +259,7 @@ document.getElementById('back').addEventListener('click',function(){ if(busy) re
 
 /* ——— цикл ——— */
 function resize(){ var w=innerWidth,h=innerHeight; renderer.setSize(w,h); camE.aspect=camI.aspect=w/h; camE.updateProjectionMatrix(); camI.updateProjectionMatrix();
-  R=w/h<1?78:(w/h<1.4?58:46); }
+  R=w/h<1?78:(w/h<1.4?58:38); }
 window.addEventListener('resize',resize);
 var vec=new THREE.Vector3(), t0=performance.now();
 function frame(){ raf=requestAnimationFrame(frame); var t=(performance.now()-t0)/1000;
