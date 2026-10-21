@@ -4267,12 +4267,7 @@ a, button, summary, [role="button"], [role="link"], .arc-card{ -webkit-tap-highl
   html body #process .pr-card::after{ display:none !important; }
 }
 
-/* ───── две версии здания: длинный фасад на компьютере, квадратная иллюстрация на телефоне ───── */
-.hd-m{ display:none; }
+/* телефон: настоящее здание (кадр задаёт скрипт в index.html), по ширине экрана с полями, края не вылезают */
 @media(max-width:900px){
-  html body .hd2-art .hd-svg{ display:none !important; }
-  html body .hd2-art .hd-m{ display:block; width:calc(100vw - 40px); max-width:460px; height:auto; margin:0 auto; overflow:visible; }
-  .hd-m-a{ opacity:0; transform:translateY(8px); animation:hdMIn .5s calc(var(--i) * .18s) cubic-bezier(.2,.8,.2,1) forwards; }
-  @keyframes hdMIn{ to{ opacity:1; transform:none; } }
+  html body .hd2-art .hd-svg{ width:calc(100vw - 40px); margin:0 20px; overflow:hidden !important; }
 }
-@media(max-width:900px) and (prefers-reduced-motion:reduce){ .hd-m-a{ animation-duration:.01s; animation-delay:0s; } }
