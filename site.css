@@ -4266,3 +4266,13 @@ a, button, summary, [role="button"], [role="link"], .arc-card{ -webkit-tap-highl
   html body #process .pr-card, html body #process .pr-split .pr-card{ box-shadow:none !important; filter:none !important; }
   html body #process .pr-card::after{ display:none !important; }
 }
+
+/* ───── две версии здания: длинный фасад на компьютере, квадратная иллюстрация на телефоне ───── */
+.hd-m{ display:none; }
+@media(max-width:900px){
+  html body .hd2-art .hd-svg{ display:none !important; }
+  html body .hd2-art .hd-m{ display:block; width:calc(100vw - 40px); max-width:460px; height:auto; margin:0 auto; overflow:visible; }
+  .hd-m-a{ opacity:0; transform:translateY(8px); animation:hdMIn .5s calc(var(--i) * .18s) cubic-bezier(.2,.8,.2,1) forwards; }
+  @keyframes hdMIn{ to{ opacity:1; transform:none; } }
+}
+@media(max-width:900px) and (prefers-reduced-motion:reduce){ .hd-m-a{ animation-duration:.01s; animation-delay:0s; } }
