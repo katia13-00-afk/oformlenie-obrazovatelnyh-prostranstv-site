@@ -3900,3 +3900,22 @@ html body .hd2-art .hd-svg{ width:100%; margin:0; }
 .hd-tag.is-open{ z-index:6; }
 .hd-tag.is-open .hd-pop{ opacity:1; visibility:visible; transform:translate(-50%,0); }
 .hd-tag::after{ z-index:-1; }
+
+/* ───────── все кнопки сайта — единый стиль таблички (как на главном экране) ───────── */
+html body .btn{ --bc:#fff; --tile:#F3F4F6; --tile-ink:#16191B;
+  display:inline-flex; align-items:stretch; justify-content:flex-start; gap:0 !important; width:auto; min-height:0; padding:.95em 0 .95em 1.45em !important; border:0 !important; border-radius:.7em !important; overflow:hidden;
+  font-family:var(--f-text) !important; font-size:15px; font-weight:500 !important; letter-spacing:0 !important; text-transform:none !important; line-height:1; text-decoration:none; white-space:nowrap; cursor:pointer;
+  color:#16191B; background:var(--bc) !important; box-shadow:0 0 0 .5px rgba(0,30,90,.10), 0 2px 3px rgba(0,30,90,.08) !important; transition:background .2s, color .2s, transform .15s; }
+html body .btn:not(:has(.btn-arrow)){ padding-right:1.45em !important; }
+html body .btn .btn-arrow{ display:flex; align-items:center; justify-content:center; width:3em; height:auto; align-self:stretch; margin:-.95em 0 -.95em 1.3em !important; border-radius:0 !important; background:var(--tile) !important; box-shadow:none !important; }
+html body .btn .btn-arrow svg{ width:1em; height:1em; }
+html body .btn .btn-arrow svg path, html body .btn .btn-arrow svg *{ stroke:var(--tile-ink) !important; }
+html body .btn:active{ transform:scale(.98); }
+html body .btn-primary{ --bc:#0055FF; --tile:#0040C2; --tile-ink:#fff; color:#fff; }
+html body .btn-primary:hover{ --bc:#0048D9; --tile:#0035A3; }
+html body .btn-ghost{ --bc:#fff; color:#16191B; }
+html body .btn-ghost:hover{ --tile:#E6E9EF; }
+/* «Заявка» в меню */
+html body header #siteNav a.nav-cta{ display:inline-flex !important; align-items:stretch; gap:0 !important; padding:.62em 0 .62em 1.1em !important; border-radius:.6em !important; font-weight:500 !important; overflow:hidden; box-shadow:0 0 0 .5px rgba(0,30,90,.10), 0 2px 3px rgba(0,30,90,.08) !important; }
+html body header #siteNav a.nav-cta svg{ display:block !important; box-sizing:content-box; width:14px; height:14px; padding:0 .8em; margin-left:.9em; background:#0040C2; align-self:stretch; margin-top:-.62em; margin-bottom:-.62em; height:auto; }
+html body .cookie .btn{ --bc:#0055FF; color:#fff; }
