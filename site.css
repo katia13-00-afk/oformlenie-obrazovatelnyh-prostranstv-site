@@ -4168,3 +4168,14 @@ a, button, summary, [role="button"], [role="link"], .arc-card{ -webkit-tap-highl
   html body .wy-slide h3{ font-size:23px !important; hyphens:auto; -webkit-hyphens:auto; overflow-wrap:break-word; }
 }
 @media(max-width:700px){ html body .wy-slide h3{ hyphens:manual !important; -webkit-hyphens:manual !important; } }
+
+/* ───────── телефон: главный экран на всю высоту, школа крупнее и рисуется быстро ───────── */
+@media(max-width:900px){
+  html body .hd2{ min-height:calc(100svh - 64px) !important; justify-content:space-between !important; padding-bottom:0 !important; }
+  html body .hd2-art{ margin:auto 0 !important; padding:clamp(20px,4svh,40px) 0; }
+  html body .hd2-art .hd-svg{ width:290vw; margin-left:-95vw; }
+  html body .hd-sh{ animation:hdDraw .55s calc(var(--d) * .22) cubic-bezier(.45,.1,.3,1) forwards, hdFill .6s 1.1s ease-in-out forwards, hdTone .6s 1.1s ease forwards; }
+  html body .hd-nf{ animation:hdDraw .55s calc(var(--d) * .22) cubic-bezier(.45,.1,.3,1) forwards, hdTone .6s 1.1s ease forwards; }
+  html body .hd-dec{ animation:hdDecFade .6s calc(var(--dd) * .15) ease-in-out forwards; }
+  html body .hd-fx{ animation:hdFx .6s 1.5s ease forwards; }
+}
