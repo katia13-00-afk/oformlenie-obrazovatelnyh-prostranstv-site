@@ -4056,3 +4056,7 @@ html body #why .why-body mark.ac{ font-weight:600; }
 /* заголовок главного экрана: без вставок, средний вес */
 html body .hd2 h1{ font-weight:600 !important; letter-spacing:-.028em; }
 @media(min-width:901px){ html body .hd2 h1{ white-space:nowrap; max-width:none !important; } }
+
+/* надстрочная строка главного экрана: обычный шрифт, ровно */
+html body .hd2 .hd2-eyebrow{ font-family:var(--f-text) !important; font-weight:500 !important; font-size:clamp(14px,1vw,17px) !important; letter-spacing:0 !important; text-transform:none !important; line-height:1; color:#5B6472; display:inline-flex; align-items:center; gap:.6em; }
+html body .hd2 .hd2-eyebrow::before{ width:.55em; height:.55em; border-radius:50%; box-shadow:none; flex:none; margin:0; transform:translateY(.02em); }
