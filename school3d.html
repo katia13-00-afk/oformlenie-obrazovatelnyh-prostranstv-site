@@ -16,17 +16,20 @@ html,body{ margin:0; height:100%; background:#fff; color:var(--ink); font-family
 #stage{ position:fixed; inset:0; touch-action:none; cursor:grab; }
 #stage.drag{ cursor:grabbing; }
 canvas{ display:block; width:100%; height:100%; }
+.vig{ position:fixed; inset:0; z-index:3; pointer-events:none; opacity:0; transition:opacity .4s; background:radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(20,24,32,.28) 100%); }
+.vig.on{ opacity:1; }
 .top{ position:fixed; left:clamp(16px,3vw,48px); top:clamp(16px,3vh,36px); z-index:5; display:flex; flex-direction:column; gap:10px; pointer-events:none; }
 .top h1{ margin:0; font-size:clamp(22px,2.6vw,44px); font-weight:800; letter-spacing:-.03em; line-height:1.05; }
 .top p{ margin:0; max-width:34ch; font-size:clamp(13px,1vw,16px); color:var(--muted); line-height:1.4; }
+.top.inside h1, .top.inside p{ color:#fff; text-shadow:0 1px 10px rgba(0,0,0,.35); }
 .home{ position:fixed; right:clamp(16px,3vw,48px); top:clamp(16px,3vh,36px); z-index:6; text-decoration:none; color:var(--ink); font-weight:600; font-size:14px; padding:.7em 1.1em; border-radius:10px; background:#fff; box-shadow:0 0 0 .5px rgba(0,30,90,.12), 0 2px 3px rgba(0,30,90,.08); }
 .back{ position:fixed; left:clamp(16px,3vw,48px); bottom:clamp(16px,3vh,36px); z-index:6; border:0; cursor:pointer; font:600 14px Manrope,sans-serif; color:#fff; background:var(--blue); padding:.8em 1.2em; border-radius:10px; opacity:0; visibility:hidden; transition:opacity .3s; }
 .back.on{ opacity:1; visibility:visible; }
-.hint{ position:fixed; left:50%; bottom:clamp(14px,2.6vh,30px); transform:translateX(-50%); z-index:4; font-size:13px; color:var(--muted); background:rgba(255,255,255,.85); padding:.55em 1em; border-radius:999px; pointer-events:none; text-align:center; }
+.hint{ position:fixed; left:50%; bottom:clamp(14px,2.6vh,30px); transform:translateX(-50%); z-index:4; font-size:13px; color:var(--muted); background:rgba(255,255,255,.88); padding:.55em 1em; border-radius:999px; pointer-events:none; text-align:center; }
 .fade{ position:fixed; inset:0; background:#fff; z-index:8; opacity:0; pointer-events:none; transition:opacity .35s ease; }
 .fade.on{ opacity:1; }
 .hs{ all:unset; box-sizing:border-box; position:fixed; left:0; top:0; z-index:4; cursor:pointer; display:inline-flex; align-items:center; gap:.6em; padding:.5em .5em .5em .55em; border-radius:999px; background:var(--t); border:1px solid color-mix(in srgb, var(--c) 40%, transparent);
-  font:500 clamp(12px,.95vw,16px)/1 Manrope,sans-serif; color:var(--ink); white-space:nowrap; will-change:transform; transition:opacity .25s, border-color .2s, background .2s; }
+  font:500 clamp(12px,.95vw,16px)/1 Manrope,sans-serif; color:var(--ink); white-space:nowrap; will-change:transform; transition:opacity .25s, border-color .2s; box-shadow:0 4px 14px -6px rgba(0,0,0,.25); }
 .hs:hover{ border-color:var(--c); }
 .hs:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
 .hs i{ width:1.2em; height:1.2em; border-radius:.35em; background:var(--c); flex:none; }
@@ -54,7 +57,8 @@ html.embed .top h1{ font-size:clamp(20px,2vw,32px); }
 </head>
 <body>
 <div id="stage"></div>
-<div class="top"><h1>Школа изнутри</h1><p id="sub">Нажмите на подписи на здании: зайдите в коридор или кабинет и посмотрите, как работает навигация.</p></div>
+<div class="vig" id="vig"></div>
+<div class="top" id="top"><h1>Школа изнутри</h1><p id="sub">Нажмите на подписи на здании: зайдите в коридор или кабинет и посмотрите, как работает навигация.</p></div>
 <a class="home" href="index.html">← На сайт</a>
 <div class="walk" id="walk"><button type="button" id="fw" aria-label="Вперёд">↑</button><button type="button" id="bw" aria-label="Назад">↓</button></div>
 <button class="back" id="back" type="button">← К зданию</button>
@@ -73,21 +77,53 @@ var stage=document.getElementById('stage'), fade=document.getElementById('fade')
 var renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
 renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputEncoding=THREE.sRGBEncoding; renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1;
 stage.appendChild(renderer.domElement);
 
 /* ——— помощники ——— */
-function M(c,o){ return new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.85,metalness:0},o||{})); }
+function col(h){ return new THREE.Color(h).convertSRGBToLinear(); }
+function M(c,o){ return new THREE.MeshStandardMaterial(Object.assign({color:col(c),roughness:.85,metalness:0},o||{})); }
+function glow(c){ return new THREE.MeshBasicMaterial({color:col(c),toneMapped:false}); }
 function box(w,h,d,x,y,z,mat,parent,shadow){ var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat); m.position.set(x,y,z); if(shadow!==false){ m.castShadow=true; m.receiveShadow=true; } parent.add(m); return m; }
 function plane(w,h,x,y,z,mat,parent,ry,rx){ var m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),mat); m.position.set(x,y,z); if(ry) m.rotation.y=ry; if(rx) m.rotation.x=rx; parent.add(m); return m; }
-function tex(w,h,draw){ var c=document.createElement('canvas'); c.width=w; c.height=h; var x=c.getContext('2d'); draw(x,w,h); var t=new THREE.CanvasTexture(c); t.anisotropy=8; return t; }
+function rbGeo(w,h,d,r){ r=Math.min(r,w/2-.002,h/2-.002,d/2-.002); var sx=w-2*r, sy=h-2*r, rc=r*.9, hx=sx/2, hy=sy/2, sh=new THREE.Shape();
+  sh.moveTo(-hx+rc,-hy); sh.lineTo(hx-rc,-hy); sh.quadraticCurveTo(hx,-hy,hx,-hy+rc); sh.lineTo(hx,hy-rc); sh.quadraticCurveTo(hx,hy,hx-rc,hy); sh.lineTo(-hx+rc,hy); sh.quadraticCurveTo(-hx,hy,-hx,hy-rc); sh.lineTo(-hx,-hy+rc); sh.quadraticCurveTo(-hx,-hy,-hx+rc,-hy);
+  var g=new THREE.ExtrudeGeometry(sh,{depth:Math.max(.001,d-2*r),bevelEnabled:true,bevelThickness:r,bevelSize:r,bevelSegments:3,curveSegments:4}); g.center(); return g; }
+function rbox(w,h,d,r,x,y,z,mat,parent){ var m=new THREE.Mesh(rbGeo(w,h,d,r),mat); m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; parent.add(m); return m; }
+function cyl(r,h,x,y,z,mat,parent,seg){ var m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,seg||14),mat); m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; parent.add(m); return m; }
+function tex(w,h,draw){ var c=document.createElement('canvas'); c.width=w; c.height=h; var x=c.getContext('2d'); draw(x,w,h); var t=new THREE.CanvasTexture(c); t.anisotropy=8; t.encoding=THREE.sRGBEncoding; return t; }
 function signTex(lines,bg,fg,w,h,fonts){ return tex(w,h,function(x,W,H){ x.fillStyle=bg; x.fillRect(0,0,W,H); x.fillStyle=fg; x.textAlign='center'; x.textBaseline='middle';
   lines.forEach(function(l,i){ var f=(fonts&&fonts[i])||'700 '+Math.round(H/(lines.length+.6))+'px Manrope'; x.font=f; x.fillText(l,W/2,H*(i+1)/(lines.length+1)); }); }); }
-function basic(t){ return new THREE.MeshBasicMaterial({map:t}); }
-function look(cam,x,y,z){ cam.lookAt(x,y,z); }
+function basic(t){ return new THREE.MeshBasicMaterial({map:t,toneMapped:false}); }
+function lit(t,o){ return new THREE.MeshStandardMaterial(Object.assign({map:t,roughness:.6,metalness:0},o||{})); }
+function loadTex(u){ var t=new THREE.TextureLoader().load(u); t.encoding=THREE.sRGBEncoding; t.anisotropy=8; return t; }
 function ease(t){ return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2; }
+function rnd(seed){ var s=seed; return function(){ s=(s*16807)%2147483647; return (s-1)/2147483646; }; }
 
-var HS=[]; // хотспоты текущего режима
-var hsLayer=document.body;
+/* мягкое окружение (IBL) из градиента — даёт «софт» отражения и заполняющий свет */
+function envMap(stops,blobs){ var c=document.createElement('canvas'); c.width=512; c.height=256; var x=c.getContext('2d'); var g=x.createLinearGradient(0,0,0,256);
+  stops.forEach(function(s){ g.addColorStop(s[0],s[1]); }); x.fillStyle=g; x.fillRect(0,0,512,256);
+  if(blobs){ blobs.forEach(function(b){ var r=x.createRadialGradient(b[0],b[1],2,b[0],b[1],b[2]); r.addColorStop(0,b[3]); r.addColorStop(1,'rgba(255,255,255,0)'); x.fillStyle=r; x.fillRect(0,0,512,256); }); }
+  var t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; t.mapping=THREE.EquirectangularReflectionMapping; var pm=new THREE.PMREMGenerator(renderer); var e=pm.fromEquirectangular(t).texture; pm.dispose(); return e; }
+
+/* стена вдоль оси z с проёмами (чтобы солнце давало настоящие пятна света) */
+function wallZ(parent,mat,x,z0,z1,H,ops,t){ var cur=z0; ops=ops.slice().sort(function(a,b){ return a.c-b.c; });
+  function piece(a,b,y0,y1){ box(t,y1-y0,b-a,x,(y0+y1)/2,(a+b)/2,mat,parent); }
+  ops.forEach(function(o){ var a=o.c-o.w/2, b=o.c+o.w/2; if(a>cur) piece(cur,a,0,H); if(o.y0>0) piece(a,b,0,o.y0); if(o.y1<H) piece(a,b,o.y1,H); cur=b; });
+  if(cur<z1) piece(cur,z1,0,H); }
+function windowFrames(parent,x,ops,inward,fr,outsideTex){ ops.forEach(function(o){ var h=o.y1-o.y0, yc=(o.y0+o.y1)/2, ix=x+inward*.02;
+    box(.07,.07,o.w+.07,ix,o.y0,o.c,fr,parent,false); box(.07,.07,o.w+.07,ix,o.y1,o.c,fr,parent,false);
+    box(.07,h,.07,ix,yc,o.c-o.w/2,fr,parent,false); box(.07,h,.07,ix,yc,o.c+o.w/2,fr,parent,false); box(.05,h,.05,ix,yc,o.c,fr,parent,false);
+    box(.05,.05,o.w,ix,yc+.15,o.c,fr,parent,false);
+    plane(o.w,h,x,yc,o.c,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.06,depthWrite:false}),parent,inward>0?Math.PI/2:-Math.PI/2);
+    plane(o.w+.5,h+.5,x-inward*3,yc,o.c,new THREE.MeshBasicMaterial({map:outsideTex,toneMapped:false}),parent,inward>0?Math.PI/2:-Math.PI/2); }); }
+var aoTexC=null; function aoTex(){ if(aoTexC) return aoTexC; aoTexC=tex(8,128,function(x,w,h){ var g=x.createLinearGradient(0,0,0,h); g.addColorStop(0,'rgba(20,16,10,.30)'); g.addColorStop(1,'rgba(20,16,10,0)'); x.fillStyle=g; x.fillRect(0,0,w,h); }); return aoTexC; }
+var blobTexC=null; function blobTex(){ if(blobTexC) return blobTexC; blobTexC=tex(128,128,function(x,w,h){ var g=x.createRadialGradient(64,64,4,64,64,64); g.addColorStop(0,'rgba(20,16,10,.38)'); g.addColorStop(1,'rgba(20,16,10,0)'); x.fillStyle=g; x.fillRect(0,0,w,h); }); return blobTexC; }
+function aoMat(){ return new THREE.MeshBasicMaterial({map:aoTex(),transparent:true,depthWrite:false,toneMapped:false}); }
+function blob(parent,x,z,w,d){ return plane(w,d,x,.012,z,new THREE.MeshBasicMaterial({map:blobTex(),transparent:true,depthWrite:false,toneMapped:false}),parent,0,-Math.PI/2); }
+function outdoorTex(){ return tex(256,256,function(x,w,h){ var g=x.createLinearGradient(0,0,0,h); g.addColorStop(0,'#DDEBFF'); g.addColorStop(.55,'#F4F8FF'); g.addColorStop(.62,'#DCEBD0'); g.addColorStop(1,'#B7D3A0'); x.fillStyle=g; x.fillRect(0,0,w,h); x.fillStyle='rgba(120,160,110,.55)'; for(var i=0;i<7;i++){ x.beginPath(); x.arc(20+i*38,168+((i*53)%24),24+((i*17)%16),0,6.3); x.fill(); } }); }
+
+var HS=[], hsLayer=document.body, busy=false;
 function addHS(h){ var b=document.createElement('button'); b.type='button'; b.className='hs'+(h.go?' go':''); b.style.setProperty('--c',P[h.col]); b.style.setProperty('--t',TINT[h.col]);
   b.innerHTML='<i></i>'+h.label+'<u></u>'; h.el=b; h.v=new THREE.Vector3(h.pos[0],h.pos[1],h.pos[2]); hsLayer.appendChild(b);
   b.addEventListener('click',function(e){ e.stopPropagation(); if(busy) return; if(h.go) zoomTo(h); else showCard(h); }); HS.push(h); }
@@ -103,140 +139,168 @@ stage.addEventListener('pointerdown',function(){ hideCard(); });
 /* ——— сцена 1: здание снаружи ——— */
 function buildExterior(){
   var s=new THREE.Scene(); var g=new THREE.Group(); s.add(g);
-  s.add(new THREE.HemisphereLight(0xffffff,0xdfe6ee,.62));
-  var sun=new THREE.DirectionalLight(0xffffff,.55); sun.position.set(14,24,20); sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
-  var sc=sun.shadow.camera; sc.left=-26; sc.right=26; sc.top=22; sc.bottom=-22; sc.near=1; sc.far=80; sun.shadow.bias=-.0004; s.add(sun);
+  s.environment=envMap([[0,'#CFE2FF'],[.5,'#F2F6FB'],[1,'#C9CED6']]);
+  s.add(new THREE.HemisphereLight(0xffffff,0xdfe6ee,.45));
+  var sun=new THREE.DirectionalLight(col('#FFF4E4'),1.5); sun.position.set(14,24,20); sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
+  var sc=sun.shadow.camera; sc.left=-26; sc.right=26; sc.top=22; sc.bottom=-22; sc.near=1; sc.far=80; sun.shadow.bias=-.0004; sun.shadow.normalBias=.02; s.add(sun);
   var ground=new THREE.Mesh(new THREE.PlaneGeometry(120,80),new THREE.ShadowMaterial({opacity:.16})); ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; s.add(ground);
-  var wall=M('#F3F2F5'), grey=M('#A9AEB6'), dark=M('#3B4452'), white=M('#FFFFFF'), tan=M('#D0B38C'), orange=M('#E5581E'), orangeD=M('#B9461A');
-  var glass=new THREE.MeshPhongMaterial({color:0x6D8296,shininess:90,specular:0xbfd0e0});
-  // крылья
-  [-1,1].forEach(function(sd){
-    box(9,6.4,5,sd*10.5,3.2,-2.5,wall,g); box(9.4,.3,5.3,sd*10.5,6.55,-2.5,grey,g);
-  });
-  function win(x,y,w,h){ box(w,h,.1,x,y,.05,dark,g); box(w+.22,.1,.28,x,y-h/2-.05,.12,white,g); box(.06,h,.12,x-w/6,y,.1,white,g); box(.06,h,.12,x+w/6,y,.1,white,g); box(w,.06,.12,x,y+.1,.1,white,g); }
+  var wall=M('#F3F2F5'), grey=M('#A9AEB6'), dark=M('#3B4452',{roughness:.35}), white=M('#FFFFFF'), tan=M('#D0B38C'), orange=M('#E5581E'), orangeD=M('#B9461A');
+  var glass=new THREE.MeshStandardMaterial({color:col('#6D8296'),roughness:.12,metalness:.4});
+  [-1,1].forEach(function(sd){ box(9,6.4,5,sd*10.5,3.2,-2.5,wall,g); box(9.4,.3,5.3,sd*10.5,6.55,-2.5,grey,g); });
+  function win(x,y,w,h){ box(w,h,.1,x,y,.05,dark,g); box(w+.22,.1,.28,x,y-h/2-.05,.12,white,g); box(.06,h,.12,x-w/6,y,.1,white,g); box(.06,h,.12,x+w/6,y,.1,white,g); }
   [-12.8,-11.2,-9.6,7.5,9.1].forEach(function(x){ win(x,1.9,1.4,2.1); win(x,5.0,1.4,2.1); });
   box(1.2,6.4,.3,-14.5,3.2,.1,M('#E8641F'),g); box(1.2,6.4,.3,14.4,3.2,.1,M('#7DA33C'),g);
   [-14.5,14.4].forEach(function(x){ [1.9,5.0].forEach(function(y){ box(.34,1.9,.1,x-.24,y,.28,dark,g); box(.34,1.9,.1,x+.24,y,.28,dark,g); }); });
   box(2.2,6.4,.3,-7.1,3.2,.1,tan,g);
-  // мурал на правом крыле
-  var murTex=new THREE.TextureLoader().load('img/main/wall-print-art.jpg'); var mur=plane(4.2,4.6,12,3.3,.18,new THREE.MeshBasicMaterial({map:murTex}),g);
+  var murTex=loadTex('img/main/wall-print-art.jpg'); plane(4.2,4.6,12,3.3,.18,new THREE.MeshBasicMaterial({map:murTex,toneMapped:false}),g);
   box(4.4,4.8,.08,12,3.3,.12,white,g);
-  // центральный объём: верхний этаж выступает вперёд над колоннами
   box(12,3.5,6.5,0,1.75,-1.75,M('#EFEBE5'),g);
   box(12,4.1,8.5,0,5.55,-.75,orange,g); box(12.4,.3,8.9,0,7.75,-.75,grey,g);
-  // ленточное остекление
   box(10.8,1.6,.12,0,5.2,3.52,glass,g,false);
   [-4.05,-1.35,1.35,4.05].forEach(function(x){ box(.32,1.6,.2,x,5.2,3.58,M('#F0F2F4'),g); });
   box(11.0,.1,.2,0,6.05,3.58,M('#8A93A1'),g,false); box(11.0,.1,.2,0,4.35,3.58,M('#8A93A1'),g,false);
-  var doorM=M('#4F5C68',{roughness:.25,metalness:.2});
+  var doorM=M('#4F5C68',{roughness:.2,metalness:.25});
   [-4.1,-1.35,1.35,4.1].forEach(function(x,i){ var w=i==1||i==2?2.0:1.9; box(w,2.5,.1,x,1.3,1.7,doorM,g); box(.05,2.5,.12,x,1.3,1.76,white,g); });
   box(1.1,2.5,.1,-5.25,1.3,1.7,M('#4A5662'),g); box(1.1,2.5,.1,5.25,1.3,1.7,M('#4A5662'),g);
   [-5.8,-2.7,0,2.7,5.8].forEach(function(x){ box(.7,3.4,.7,x,1.7,3.2,tan,g); });
   box(12.2,.25,3.6,0,3.55,1.7,orangeD,g);
-  // вывеска
   var signT=tex(1024,256,function(x,W,H){ x.fillStyle='#E5581E'; x.fillRect(0,0,W,H); x.fillStyle='#fff'; x.textBaseline='alphabetic';
     x.font='600 54px Manrope'; x.fillText('школа',250,100); x.font='800 104px Manrope'; x.fillText('ОТКРЫТИЕ',244,196);
-    x.fillStyle='#fff'; x.fillRect(60,70,120,18); x.fillRect(60,100,120,18); x.fillRect(60,130,120,18); });
+    x.fillRect(60,70,120,18); x.fillRect(60,100,120,18); x.fillRect(60,130,120,18); });
   plane(4.6,1.15,-3.6,6.8,3.54,basic(signT),g);
-  // подпись справа
   var small=tex(512,128,function(x,W,H){ x.fillStyle='#E5581E'; x.fillRect(0,0,W,H); x.fillStyle='#fff'; x.font='700 22px Manrope'; x.fillText('МАОУ СРЕДНЯЯ',20,40); x.fillText('ОБЩЕОБРАЗОВАТЕЛЬНАЯ',20,72); x.fillText('ШКОЛА Г. СУЗДАЛЯ',20,104); });
   plane(2.6,.65,3.9,6.9,3.54,basic(small),g);
-  return {scene:s,group:g};
+  return {scene:s,exposure:.95};
 }
 
 /* ——— сцена 2: коридор ——— */
 function buildCorridor(){
-  var s=new THREE.Scene(); s.background=new THREE.Color('#EEF1F5');
-  s.add(new THREE.HemisphereLight(0xffffff,0xc9d0da,.5));
-  var W=3.6,H=3.1,L=34;
-  [-2,-8,-14,-20,-26].forEach(function(z){ var l=new THREE.PointLight(0xffffff,.28,12); l.position.set(0,2.9,z); s.add(l); box(1.6,.04,.4,0,H-.02,z,new THREE.MeshBasicMaterial({color:0xffffff}),s,false); });
-  var floorT=tex(256,256,function(x,w,h){ x.fillStyle='#D9DEE6'; x.fillRect(0,0,w,h); x.strokeStyle='#C6CCD6'; x.lineWidth=2; x.strokeRect(0,0,w,h); }); floorT.wrapS=floorT.wrapT=THREE.RepeatWrapping; floorT.repeat.set(W/1.2,L/1.2);
-  plane(W,L,0,0,-L/2,new THREE.MeshStandardMaterial({map:floorT,roughness:.5}),s,0,-Math.PI/2);
-  plane(W,L,0,H,-L/2,M('#F1F3F7'),s,0,Math.PI/2);
-  var wallM=M('#E4E8EE');
-  plane(L,H,-W/2,H/2,-L/2,wallM,s,Math.PI/2); plane(L,H,W/2,H/2,-L/2,wallM,s,-Math.PI/2);
-  box(L,.14,.03,-W/2+.02,.07,-L/2,M('#C8CED8'),s,false);
+  var s=new THREE.Scene(); s.background=col('#E9ECF1'); var g=new THREE.Group(); s.add(g);
+  s.environment=envMap([[0,'#E8E8E8'],[.45,'#D9D2C6'],[1,'#7C766C']],[[400,70,60,'rgba(255,255,255,1)'],[100,70,50,'rgba(255,255,255,.9)']]);
+  var W=3.8,H=3.2,L=32;
+  var paint=M('#F2EFEA'), white=M('#FFFFFF'), woodDoor=M('#CDB798',{roughness:.5}), metal=M('#B8BEC8',{roughness:.3,metalness:.7}), frame=M('#FAF8F5',{roughness:.5});
+  s.add(new THREE.HemisphereLight(0xffffff,0xb9b2a6,.18));
+  var sun=new THREE.DirectionalLight(col('#FFF1DA'),1.5); sun.position.set(14,9,-8); sun.target.position.set(-1,0,-11); s.add(sun); s.add(sun.target);
+  sun.castShadow=true; sun.shadow.mapSize.set(4096,4096); var sc=sun.shadow.camera; sc.left=-24; sc.right=24; sc.top=24; sc.bottom=-24; sc.near=1; sc.far=70; sun.shadow.bias=-.0006; sun.shadow.normalBias=.03;
+  for(var zz=-3;zz>-30;zz-=6){ rbox(1.5,.05,.34,.02,0,H-.04,zz,glow('#FFFFFF'),g).castShadow=false; var sp=new THREE.SpotLight(col('#FFF6E8'),.7,9,1.15,1,1.6); sp.position.set(0,H-.1,zz); sp.target.position.set(0,0,zz); s.add(sp); s.add(sp.target); }
+  var floorT=tex(512,512,function(x,w,h){ x.fillStyle='#CFC8BB'; x.fillRect(0,0,w,h); var r=rnd(7); for(var i=0;i<2600;i++){ x.fillStyle='rgba('+(r()>.5?'255,255,255':'80,70,55')+','+(.04+r()*.07)+')'; x.fillRect(r()*w,r()*h,1+r()*2,1+r()*2); }
+    x.strokeStyle='rgba(60,50,38,.22)'; x.lineWidth=2; x.strokeRect(0,0,w,h); });
+  floorT.wrapS=floorT.wrapT=THREE.RepeatWrapping; floorT.repeat.set(W/1.0,L/1.0);
+  var fl=plane(W,L,0,0,-L/2,new THREE.MeshStandardMaterial({map:floorT,roughness:.28,metalness:.05}),g,0,-Math.PI/2); fl.receiveShadow=true;
+  var ceil=box(W+.5,.2,L,0,H+.1,-L/2,M('#F4F2EE',{emissive:col('#F4F2EE'),emissiveIntensity:.55}),g); ceil.castShadow=false;
+  var windows=[-3.2,-9.4,-15.6,-21.8,-28].map(function(z){ return {c:z,w:1.8,y0:.95,y1:2.6}; });
+  wallZ(g,paint,-W/2-.125,-L,0,H,[],.25); wallZ(g,paint,W/2+.125,-L,0,H,windows,.25);
+  windowFrames(g,W/2,windows,-1,frame,outdoorTex());
+  box(W+.5,H,.3,0,H/2,-L-.15,paint,g); box(W+.5,H,.3,0,H/2,.15,paint,g);
+  [-1,1].forEach(function(sd){ box(.03,.12,L,sd*(W/2-.015),.06,-L/2,white,g,false); });
+  box(.012,.05,L,-W/2+.006,1.12,-L/2,M(P.blue),g,false);
+  [-1,1].forEach(function(sd){ var m=plane(.45,L,sd*(W/2-.225),.01,-L/2,aoMat(),g,0,-Math.PI/2); m.rotation.z=sd>0?Math.PI/2:-Math.PI/2; });
   var cols=['blue','orange','green','yellow','red'];
-  for(var i=0;i<8;i++){ var z=-3.2-i*3.7, c=cols[i%5];
-    box(.08,2.15,1.05,-W/2+.04,1.08,z,M('#D8C2A2'),s,false); box(.04,2.25,1.2,-W/2+.03,1.12,z,M('#fff'),s,false);
-    var pl=plane(.7,.32,-W/2+.07,2.42,z,basic(signTex(['Каб. '+(101+i)],P[c],c==='yellow'?INK:'#fff',256,116,['800 56px Manrope'])),s,Math.PI/2);
-    // окна справа
-    if(i%2===0){ box(.05,1.5,1.7,W/2-.03,1.7,z,new THREE.MeshBasicMaterial({color:0xDCE9F7}),s,false); box(.06,.06,1.8,W/2-.03,2.47,z,M('#fff'),s,false); box(.06,.06,1.8,W/2-.03,.93,z,M('#fff'),s,false); box(.06,1.5,.05,W/2-.03,1.7,z,M('#fff'),s,false); }
-  }
-  var murT=new THREE.TextureLoader().load('img/main/wall-print-art.jpg'); plane(5.2,2.3,W/2-.02,1.55,-15.6,new THREE.MeshBasicMaterial({map:murT}),s,-Math.PI/2);
-  // подвесные указатели
-  function hang(z,lines,bg,fg){ var t=signTex(lines,bg,fg,768,230,['800 78px Manrope','600 46px Manrope']); box(1.9,.58,.05,0,2.55,z,M('#fff'),s,false); plane(1.84,.52,0,2.55,z+.03,basic(t),s); box(.03,.5,.03,-.7,2.95,z,M('#8A93A1'),s,false); box(.03,.5,.03,.7,2.95,z,M('#8A93A1'),s,false); }
+  for(var i=0;i<7;i++){ var z=-3.6-i*3.8, c=cols[i%5], x=-W/2;
+    box(.05,2.2,1.2,x+.025,1.1,z,frame,g); rbox(.05,2.1,.96,.01,x+.07,1.06,z,woodDoor,g);
+    box(.02,.5,.14,x+.1,1.5,z,glow('#E7F0FA'),g,false); cyl(.018,.12,x+.12,1.05,z+.36,metal,g,10).rotation.x=Math.PI/2;
+    plane(.72,.3,x+.03,2.42,z,basic(signTex(['Каб. '+(101+i)],P[c],c==='yellow'?INK:'#fff',256,108,['800 54px Manrope'])),g,Math.PI/2); }
+  var murT=loadTex('img/main/wall-print-art.jpg'); plane(3.3,1.9,W/2-.01,1.6,-12.5,new THREE.MeshBasicMaterial({map:murT,toneMapped:false}),g,-Math.PI/2); box(.03,2.0,3.4,W/2-.02,1.6,-12.5,white,g,false);
+  var cork=tex(512,320,function(x,w,h){ x.fillStyle='#C8A06E'; x.fillRect(0,0,w,h); var r=rnd(3); for(var i=0;i<1800;i++){ x.fillStyle='rgba('+(r()>.5?'255,230,190':'110,76,40')+','+(.06+r()*.1)+')'; x.fillRect(r()*w,r()*h,1+r()*2,1+r()*2); }
+    var cs=[P.blue,P.orange,P.yellow,P.green,P.red,'#fff'], rr=rnd(11); for(var k=0;k<8;k++){ x.save(); x.translate(60+(k%4)*115,70+Math.floor(k/4)*130); x.rotate((rr()-.5)*.12); x.fillStyle=cs[k%6]; x.fillRect(-40,-45,80,100); x.fillStyle='rgba(255,255,255,.7)'; x.fillRect(-30,-30,60,6); x.fillRect(-30,-16,60,6); x.fillRect(-30,-2,40,6); x.restore(); } });
+  rbox(.04,1.2,1.9,.015,-W/2+.06,1.55,-13.1,M('#FFFFFF'),g); plane(1.76,1.06,-W/2+.085,1.55,-13.1,lit(cork,{roughness:.9}),g,Math.PI/2);
+  plane(1.2,.26,-W/2+.04,2.4,-13.1,basic(signTex(['Объявления'],P.green,'#fff',320,70,['700 36px Manrope'])),g,Math.PI/2);
+  function hang(z,lines,bg,fg){ var t=signTex(lines,bg,fg,768,230,['800 78px Manrope','600 46px Manrope']); rbox(1.9,.58,.05,.02,0,2.62,z,M('#FFFFFF'),g); plane(1.84,.52,0,2.62,z+.03,basic(t),g); plane(1.84,.52,0,2.62,z-.03,basic(t),g,Math.PI);
+    cyl(.012,.5,-.7,2.95,z,metal,g,8); cyl(.012,.5,.7,2.95,z,metal,g,8); }
   hang(-7.5,['Кабинеты 101–108','→'],P.blue,'#fff'); hang(-15,['← Библиотека','Столовая →'],P.orange,'#fff'); hang(-23,['Актовый зал','↑'],P.green,'#fff');
-  // стрелки на полу
-  [[-5,'→'],[-11,'↑']].forEach(function(a){ var t=tex(256,256,function(x,w,h){ x.clearRect(0,0,w,h); x.fillStyle=P.blue; x.font='700 200px Manrope'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(a[1],w/2,h/2+8); });
-    var m=plane(.9,.9,0,.01,a[0],new THREE.MeshBasicMaterial({map:t,transparent:true}),s,0,-Math.PI/2); });
-  // торец: номер этажа
-  var end=tex(1024,640,function(x,W,H){ x.fillStyle=P.yellow; x.fillRect(0,0,W,H); x.fillStyle=INK; x.textAlign='center'; x.textBaseline='middle'; x.font='400 420px "Days One"'; x.fillText('2',W/2-110,H/2+10); x.font='400 110px "Days One"'; x.fillText('этаж',W/2+210,H/2+110); });
-  plane(W,H,0,H/2,-L+.01,basic(end),s);
-  return {scene:s,L:L};
+  [[-5,'→'],[-11,'↑']].forEach(function(a){ var t=tex(256,256,function(x,w,h){ x.fillStyle=P.blue; x.font='700 200px Manrope'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(a[1],w/2,h/2+8); });
+    plane(.9,.9,0,.012,a[0],new THREE.MeshBasicMaterial({map:t,transparent:true,opacity:.9,toneMapped:false}),g,0,-Math.PI/2); });
+  rbox(.46,.06,1.6,.02,W/2-.4,.46,-6,M('#C9A27A',{roughness:.55}),g); [-.7,.7].forEach(function(dz){ box(.05,.44,.4,W/2-.4,.22,-6+dz,metal,g); });
+  rbox(.3,.4,.3,.04,W/2-.42,.2,-17.6,M('#E7E2D8',{roughness:.7}),g); var leafM=M('#4E9A57',{roughness:.7}); for(var q=0;q<9;q++){ var lf=new THREE.Mesh(new THREE.SphereGeometry(.15+.05*(q%3),12,10),leafM); lf.scale.set(1,1.5,.5); lf.position.set(W/2-.42+Math.cos(q*.9)*.12,.7+(q%4)*.07,-17.6+Math.sin(q*.9)*.12); lf.rotation.set(Math.sin(q)*.6,q,Math.cos(q)*.6); lf.castShadow=true; g.add(lf); }
+  var end=tex(1024,640,function(x,W2,H2){ x.fillStyle=P.yellow; x.fillRect(0,0,W2,H2); x.fillStyle=INK; x.textAlign='center'; x.textBaseline='middle'; x.font='400 420px "Days One"'; x.fillText('2',W2/2-110,H2/2+10); x.font='400 110px "Days One"'; x.fillText('этаж',W2/2+210,H2/2+110); });
+  plane(W-.2,H-.4,0,H/2,-L+.01,basic(end),g);
+  return {scene:s,exposure:.78,L:L};
 }
 
 /* ——— сцена 3: кабинет ——— */
 function buildClass(){
-  var s=new THREE.Scene(); s.background=new THREE.Color('#EEF1F5');
-  s.add(new THREE.HemisphereLight(0xffffff,0xc9d0da,.55));
-  var W=8.4,D=8.6,H=3.2;
-  [-1.5,2.2].forEach(function(z){ [-2,2].forEach(function(x){ var l=new THREE.PointLight(0xffffff,.25,10); l.position.set(x,3,z); s.add(l); box(1.5,.04,.35,x,H-.02,z,new THREE.MeshBasicMaterial({color:0xffffff}),s,false); }); });
-  plane(W,D,0,0,0,M('#D8C2A2',{roughness:.6}),s,0,-Math.PI/2); plane(W,D,0,H,0,M('#F1F3F7'),s,0,Math.PI/2);
-  var wm=M('#E4E8EE');
-  plane(W,H,0,H/2,-D/2,wm,s); plane(W,H,0,H/2,D/2,wm,s,Math.PI); plane(D,H,-W/2,H/2,0,wm,s,Math.PI/2); plane(D,H,W/2,H/2,0,wm,s,-Math.PI/2);
-  // доска
-  box(4.6,1.3,.06,0,1.65,-D/2+.04,M('#2E3A3F'),s,false); box(4.8,.06,.1,0,.99,-D/2+.05,M('#fff'),s,false);
-  var bt=tex(1024,288,function(x,W,H){ x.fillStyle='#2E3A3F'; x.fillRect(0,0,W,H); x.fillStyle='rgba(255,255,255,.85)'; x.font='500 64px Manrope'; x.textAlign='left'; x.fillText('Тема урока',60,100); x.font='400 44px Manrope'; x.fillText('Навигация в школе: как найти свой кабинет',60,180); });
-  plane(4.5,1.26,0,1.65,-D/2+.075,basic(bt),s);
-  // табличка над доской
-  plane(1.2,.44,0,2.62,-D/2+.04,basic(signTex(['Кабинет 210'],P.blue,'#fff',384,140,['800 52px Manrope'])),s);
-  // окна слева
-  [-2.3,1,3.2].forEach(function(z){ box(.05,1.6,1.9,-W/2+.03,1.8,z,new THREE.MeshBasicMaterial({color:0xDCE9F7}),s,false); box(.06,.07,2.0,-W/2+.04,2.64,z,M('#fff'),s,false); box(.06,.07,2.0,-W/2+.04,.96,z,M('#fff'),s,false); });
-  // дверь и таблички справа
-  box(.08,2.15,1.05,W/2-.05,1.08,2.6,M('#D8C2A2'),s,false);
-  plane(.7,.32,W/2-.1,2.42,2.6,basic(signTex(['210'],P.orange,'#fff',256,116,['800 70px Manrope'])),s,-Math.PI/2);
-  var poster=tex(512,720,function(x,w,h){ x.fillStyle='#fff'; x.fillRect(0,0,w,h); var cs=[P.blue,P.orange,P.yellow,P.green,P.red,P.blue]; for(var i=0;i<6;i++){ x.fillStyle=cs[i]; x.fillRect(40+(i%2)*226,60+Math.floor(i/2)*180,206,160); }
-    x.fillStyle=INK; x.font='800 54px Manrope'; x.textAlign='center'; x.fillText('ПРАВИЛА',w/2,630); });
-  plane(1.1,1.55,W/2-.02,1.55,-1.2,basic(poster),s,-Math.PI/2);
-  // парты
-  var top=M('#F6F7F9'), leg=M('#8A93A1'), ch=[P.blue,P.orange,P.green];
-  for(var r=0;r<3;r++) for(var c=0;c<2;c++){ var x=(c?1.9:-1.9)+0, z=-1.2+r*1.7;
-    [-0.9,0.9].forEach(function(dx,k){ var cx=x+dx*.0; });
-    box(1.6,.05,.6,x,.74,z,top,s); box(.05,.72,.5,x-.7,.37,z,leg,s,false); box(.05,.72,.5,x+.7,.37,z,leg,s,false);
-    box(.42,.05,.4,x-.4,.45,z+.55,M(ch[(r+c)%3]),s,false); box(.42,.4,.04,x-.4,.68,z+.77,M(ch[(r+c)%3]),s,false);
-    box(.42,.05,.4,x+.4,.45,z+.55,M(ch[(r+c+1)%3]),s,false); box(.42,.4,.04,x+.4,.68,z+.77,M(ch[(r+c+1)%3]),s,false); }
-  return {scene:s};
+  var s=new THREE.Scene(); s.background=col('#E9ECF1'); var g=new THREE.Group(); s.add(g);
+  s.environment=envMap([[0,'#E8E8E8'],[.45,'#DCD5C9'],[1,'#7E786E']],[[60,80,70,'rgba(255,255,255,1)']]);
+  var W=8.8,D=9.2,H=3.3, zB=-D/2;
+  var paint=M('#F3F0EB'), white=M('#FFFFFF'), frame=M('#FAF8F5',{roughness:.5}), metal=M('#B8BEC8',{roughness:.3,metalness:.7});
+  s.add(new THREE.HemisphereLight(0xffffff,0xb9b2a6,.2));
+  var sun=new THREE.DirectionalLight(col('#FFF0D8'),1.6); sun.position.set(-14,9.5,3); sun.target.position.set(1,0,-.5); s.add(sun); s.add(sun.target);
+  sun.castShadow=true; sun.shadow.mapSize.set(4096,4096); var sc=sun.shadow.camera; sc.left=-14; sc.right=14; sc.top=14; sc.bottom=-14; sc.near=1; sc.far=50; sun.shadow.bias=-.0006; sun.shadow.normalBias=.03;
+  [[-2.4,-2.0],[2.4,-2.0],[-2.4,1.6],[2.4,1.6]].forEach(function(p){ rbox(1.4,.05,.4,.02,p[0],H-.04,p[1],glow('#FFFFFF'),g).castShadow=false; var sp=new THREE.SpotLight(col('#FFF6E8'),.65,9,1.2,1,1.6); sp.position.set(p[0],H-.1,p[1]); sp.target.position.set(p[0],0,p[1]); s.add(sp); s.add(sp.target); });
+  var woodT=tex(1024,1024,function(x,w,h){ var r=rnd(5); var cs=['#C9A173','#BF9566','#D3AC80','#C29A6C','#CDA678']; for(var row=0;row<14;row++){ var y=row*(h/14), off=(row%2)*100, xx=-off; while(xx<w){ var len=220+r()*160; x.fillStyle=cs[(r()*cs.length)|0]; x.fillRect(xx,y,len,h/14); x.strokeStyle='rgba(70,45,20,.35)'; x.lineWidth=2; x.strokeRect(xx,y,len,h/14);
+      for(var k=0;k<6;k++){ x.strokeStyle='rgba(90,60,30,.07)'; x.beginPath(); x.moveTo(xx,y+r()*(h/14)); x.lineTo(xx+len,y+r()*(h/14)); x.stroke(); } xx+=len; } } });
+  woodT.wrapS=woodT.wrapT=THREE.RepeatWrapping; woodT.repeat.set(W/2.4,D/2.4);
+  var fl=plane(W,D,0,0,0,new THREE.MeshStandardMaterial({map:woodT,roughness:.42,metalness:.02}),g,0,-Math.PI/2); fl.receiveShadow=true;
+  var ceil=box(W+.5,.2,D,0,H+.1,0,M('#F4F2EE',{emissive:col('#F4F2EE'),emissiveIntensity:.55}),g); ceil.castShadow=false;
+  var wins=[-2.6,.2,3.0].map(function(z){ return {c:z,w:2.2,y0:.95,y1:2.8}; });
+  wallZ(g,paint,-W/2-.125,-D/2,D/2,H,wins,.25); windowFrames(g,-W/2,wins,1,frame,outdoorTex());
+  wallZ(g,paint,W/2+.125,-D/2,D/2,H,[],.25);
+  box(W+.5,H,.3,0,H/2,zB-.15,paint,g); box(W+.5,H,.3,0,H/2,D/2+.15,paint,g);
+  [-1,1].forEach(function(sd){ box(.03,.12,D,sd*(W/2-.015),.06,0,white,g,false); box(W,.12,.03,0,.06,sd*(D/2-.015),white,g,false); });
+  wins.forEach(function(o){ box(.22,.1,o.w+.1,-W/2+.11,.94,o.c,white,g); for(var i=0;i<10;i++) box(.08,.5,.1,-W/2+.1,.5,o.c-o.w/2+.1+i*(o.w-.2)/9,M('#FAFAFA',{roughness:.4}),g,false); });
+  [-1,1].forEach(function(sd){ var m=plane(.5,D,sd*(W/2-.25),.01,0,aoMat(),g,0,-Math.PI/2); m.rotation.z=sd>0?Math.PI/2:-Math.PI/2; });
+  var mb=plane(.5,W,0,.01,zB+.25,aoMat(),g,0,-Math.PI/2); mb.rotation.z=Math.PI;
+  rbox(4.9,1.38,.07,.02,0,1.7,zB+.04,white,g); box(4.6,1.12,.02,0,1.7,zB+.09,M('#33423F',{roughness:.9}),g,false);
+  var bt=tex(1024,256,function(x,W2,H2){ x.fillStyle='#33423F'; x.fillRect(0,0,W2,H2); x.fillStyle='rgba(255,255,255,.88)'; x.font='500 64px Manrope'; x.textAlign='left'; x.fillText('Тема урока',60,100); x.font='400 40px Manrope'; x.fillText('Навигация в школе: как найти свой кабинет',60,176); x.strokeStyle='rgba(255,255,255,.3)'; x.lineWidth=3; x.beginPath(); x.moveTo(60,210); x.lineTo(500,210); x.stroke(); });
+  plane(4.55,1.08,0,1.7,zB+.102,basic(bt),g); box(4.7,.05,.14,0,.98,zB+.12,metal,g);
+  rbox(1.3,.46,.05,.015,0,2.65,zB+.04,M('#FFFFFF'),g); plane(1.24,.4,0,2.65,zB+.07,basic(signTex(['Кабинет 210'],P.blue,'#fff',384,120,['800 50px Manrope'])),g);
+  var murT=loadTex('img/main/wall-print-art.jpg'); rbox(1.8,2.2,.05,.012,3.4,1.65,zB+.04,white,g); plane(1.7,2.1,3.4,1.65,zB+.07,new THREE.MeshBasicMaterial({map:murT,toneMapped:false}),g);
+  var cork=tex(512,320,function(x,w,h){ x.fillStyle='#C8A06E'; x.fillRect(0,0,w,h); var r=rnd(9); for(var i=0;i<1800;i++){ x.fillStyle='rgba('+(r()>.5?'255,230,190':'110,76,40')+','+(.06+r()*.1)+')'; x.fillRect(r()*w,r()*h,1+r()*2,1+r()*2); }
+    var cs=[P.blue,P.orange,P.yellow,P.green,P.red,'#fff'], rr=rnd(13); for(var k=0;k<8;k++){ x.save(); x.translate(60+(k%4)*115,70+Math.floor(k/4)*130); x.rotate((rr()-.5)*.12); x.fillStyle=cs[(k+2)%6]; x.fillRect(-40,-45,80,100); x.fillStyle='rgba(255,255,255,.7)'; x.fillRect(-30,-30,60,6); x.fillRect(-30,-16,60,6); x.restore(); } });
+  rbox(.05,1.3,2.1,.015,W/2-.06,1.6,-2.4,white,g); plane(1.94,1.14,W/2-.09,1.6,-2.4,lit(cork,{roughness:.9}),g,-Math.PI/2);
+  plane(1.3,.3,W/2-.04,2.45,-2.4,basic(signTex(['Объявления'],P.green,'#fff',360,80,['700 40px Manrope'])),g,-Math.PI/2);
+  var clock=tex(256,256,function(x,w,h){ x.fillStyle='#fff'; x.beginPath(); x.arc(128,128,120,0,6.3); x.fill(); x.strokeStyle='#16191B'; x.lineWidth=8; x.stroke(); for(var i=0;i<12;i++){ var a=i*Math.PI/6; x.beginPath(); x.moveTo(128+Math.sin(a)*98,128-Math.cos(a)*98); x.lineTo(128+Math.sin(a)*110,128-Math.cos(a)*110); x.lineWidth=6; x.stroke(); }
+    x.lineWidth=8; x.beginPath(); x.moveTo(128,128); x.lineTo(128+Math.sin(.9)*60,128-Math.cos(.9)*60); x.stroke(); x.lineWidth=5; x.beginPath(); x.moveTo(128,128); x.lineTo(128+Math.sin(3.6)*90,128-Math.cos(3.6)*90); x.stroke(); });
+  plane(.46,.46,W/2-.02,2.7,-.2,basic(clock),g,-Math.PI/2);
+  box(.06,2.2,1.2,W/2-.03,1.1,3.2,frame,g); rbox(.05,2.1,.96,.01,W/2-.08,1.06,3.2,M('#CDB798',{roughness:.5}),g); cyl(.018,.12,W/2-.13,1.05,2.9,metal,g,10).rotation.x=Math.PI/2;
+  plane(.7,.3,W/2-.05,2.45,3.2,basic(signTex(['210'],P.orange,'#fff',256,110,['800 64px Manrope'])),g,-Math.PI/2);
+  var shelfM=M('#E6DFD3',{roughness:.6}); var sx=W/2-.28; box(.5,2.0,2.0,sx,1.0,.55,shelfM,g);
+  var rr2=rnd(21); for(var sh=0;sh<4;sh++){ var yb=.2+sh*.46; box(.46,.03,1.9,sx-.01,yb,.55,white,g,false); var zc=-.38; while(zc<1.45){ var bw=.03+rr2()*.04, bh=.24+rr2()*.14; var cc=[P.blue,P.orange,P.yellow,P.green,P.red,'#EDEAE2','#6B7A8F'][(rr2()*7)|0]; box(.28,bh,bw,sx-.07,yb+.015+bh/2,.55+zc,M(cc,{roughness:.8}),g,false); zc+=bw+.004; } }
+  var topM=M('#F4F3F0',{roughness:.5}), edgeM=M('#C9A27A',{roughness:.5}), legM=M('#C5CBD3',{roughness:.25,metalness:.85}), chairCols=['#3A6FD8','#E26B3C','#4DA66A','#E0B631'];
+  function desk(x,z,ci){ var d=new THREE.Group(); d.position.set(x,0,z); g.add(d);
+    rbox(1.22,.045,.58,.012,0,.745,0,topM,d); box(1.22,.03,.58,0,.715,0,edgeM,d,false);
+    [[-.55,-.24],[.55,-.24],[-.55,.24],[.55,.24]].forEach(function(p){ cyl(.018,.72,p[0],.36,p[1],legM,d,10); }); box(1.06,.02,.02,0,.28,.24,legM,d,false); box(1.06,.02,.02,0,.28,-.24,legM,d,false);
+    var cm=M(chairCols[ci%4],{roughness:.5}); rbox(.44,.045,.42,.015,0,.45,.62,cm,d); rbox(.42,.34,.035,.015,0,.7,.82,cm,d).rotation.x=-.08;
+    [[-.18,.44],[.18,.44],[-.18,.8],[.18,.8]].forEach(function(p){ cyl(.014,.45,p[0],.225,p[1],legM,d,8); });
+    blob(g,x,z+.35,1.7,1.4); }
+  var ci=0; [-2.7,-.2,2.3].forEach(function(cx){ [-2.2,-.5,1.2].forEach(function(cz){ desk(cx,cz,ci++); }); });
+  var td=new THREE.Group(); td.position.set(-1.9,0,-3.6); g.add(td); rbox(1.5,.05,.7,.015,0,.76,0,M('#E9E3D8'),td); [[-.7,-.3],[.7,-.3],[-.7,.3],[.7,.3]].forEach(function(p){ cyl(.02,.74,p[0],.37,p[1],legM,td,10); });
+  rbox(.34,.015,.24,.005,0,.79,.05,metal,td); var scr=rbox(.34,.22,.01,.004,0,.9,-.06,M('#2B313A'),td); scr.rotation.x=-.2; blob(g,-1.9,-3.6,2.0,1.1);
+  rbox(.2,.22,.2,.03,-W/2+.3,1.1,.2,M('#E7E2D8',{roughness:.7}),g); var leafM=M('#4E9A57',{roughness:.7}); for(var q=0;q<10;q++){ var lf=new THREE.Mesh(new THREE.SphereGeometry(.09+.03*(q%3),12,10),leafM); lf.scale.set(1,1.6,.5); lf.position.set(-W/2+.3+Math.cos(q)*.1,1.34+(q%4)*.06,.2+Math.sin(q)*.1); lf.rotation.set(Math.sin(q)*.6,q,Math.cos(q)*.6); lf.castShadow=true; g.add(lf); }
+  return {scene:s,exposure:.8};
 }
 
 /* ——— состояние ——— */
 var ext, cor, cls;
 var camE=new THREE.PerspectiveCamera(28,1,.1,200), camI=new THREE.PerspectiveCamera(66,1,.05,100);
-var mode='ext', busy=false, yaw=.32, pitch=.1, R=46, T=new THREE.Vector3(0,3.2,0);
+var mode='ext', yaw=.32, pitch=.1, R=38, T=new THREE.Vector3(0,3.2,0);
 var iy=0, ip=0, corZ=-1;
-var raf=0;
 var DEF={
  ext:[ {label:'Вход',col:'blue',pos:[0,1.9,3.8],go:'cor',n:[0,0,1]}, {label:'Кабинет',col:'orange',pos:[4.1,5.2,3.7],go:'cls',n:[0,0,1]},
        {label:'Вывеска',col:'yellow',pos:[-3.6,7.45,3.6],card:['Вывески','Школа №18, Обнинск'],n:[0,0,1]},
        {label:'Мурал',col:'red',pos:[12,3.3,.3],card:['Муралы и роспись стен','Школа «На заре», Малоярославец'],n:[0,0,1]} ],
- cor:[ {label:'Подвесной указатель',col:'blue',pos:[0,2.55,-7.5],card:['Навигационные указатели','Школа «На заре», Малоярославец']},
-       {label:'Табличка кабинета',col:'orange',pos:[-1.72,2.42,-6.9],card:['Таблички, навигационные указатели','Школа «На заре», Малоярославец']},
-       {label:'Роспись стены',col:'red',pos:[1.76,1.6,-15.6],card:['Муралы и роспись стен','Школа «На заре», Малоярославец']},
-       {label:'Номер этажа',col:'yellow',pos:[0,1.6,-33.9],card:['Цвет и номер этажа — часть системы навигации','']} ],
- cls:[ {label:'Табличка кабинета',col:'blue',pos:[0,2.62,-4.22],card:['Таблички, навигационные указатели','Школа «На заре», Малоярославец']},
-       {label:'Табличка на двери',col:'orange',pos:[4.1,2.42,2.6],card:['Таблички, навигационные указатели','Школа «На заре», Малоярославец']},
-       {label:'Плакат',col:'green',pos:[4.15,1.55,-1.2],card:['Информационные стенды','Школа «На заре», Малоярославец']} ]
+ cor:[ {label:'Подвесной указатель',col:'blue',pos:[0,2.62,-7.5],card:['Навигационные указатели','Школа «На заре», Малоярославец']},
+       {label:'Табличка кабинета',col:'orange',pos:[-1.72,2.42,-7.4],card:['Таблички, навигационные указатели','Школа «На заре», Малоярославец']},
+       {label:'Роспись стены',col:'red',pos:[1.78,1.6,-12.5],card:['Муралы и роспись стен','Школа «На заре», Малоярославец']},
+       {label:'Информационный стенд',col:'green',pos:[-1.78,1.55,-13.1],card:['Информационные стенды','Школа «На заре», Малоярославец']},
+       {label:'Номер этажа',col:'yellow',pos:[0,1.6,-31.9],card:['Цвет и номер этажа — часть системы навигации','']} ],
+ cls:[ {label:'Табличка кабинета',col:'blue',pos:[0,2.65,-4.55],card:['Таблички, навигационные указатели','Школа «На заре», Малоярославец']},
+       {label:'Табличка на двери',col:'orange',pos:[4.35,2.45,3.2],card:['Таблички, навигационные указатели','Школа «На заре», Малоярославец']},
+       {label:'Информационный стенд',col:'green',pos:[4.3,1.6,-2.4],card:['Информационные стенды','Школа «На заре», Малоярославец']},
+       {label:'Мурал',col:'red',pos:[3.4,1.65,-4.53],card:['Муралы и роспись стен','Школа «На заре», Малоярославец']} ]
 };
 function setMode(m){ mode=m; clearHS(); DEF[m].forEach(function(d){ addHS(Object.assign({},d)); });
-  var inside=m!=='ext'; document.getElementById('back').classList.toggle('on',inside); document.getElementById('walk').classList.toggle('on',m==='cor'); document.getElementById('hint').textContent=m==='ext'?'Перетаскивайте, чтобы повернуть':(m==='cor'?'Кнопки справа — идти по коридору, перетаскивайте — осмотреться':'Перетаскивайте, чтобы осмотреться');
+  var inside=m!=='ext'; document.getElementById('back').classList.toggle('on',inside); document.getElementById('walk').classList.toggle('on',m==='cor');
+  document.getElementById('vig').classList.toggle('on',inside); document.getElementById('top').classList.toggle('inside',inside);
+  document.getElementById('hint').textContent=m==='ext'?'Перетаскивайте, чтобы повернуть':(m==='cor'?'Кнопки справа — идти по коридору, перетаскивайте — осмотреться':'Перетаскивайте, чтобы осмотреться');
   document.getElementById('sub').textContent=m==='ext'?'Нажмите на подписи на здании: зайдите в коридор или кабинет и посмотрите, как работает навигация.':(m==='cor'?'Коридор: указатели, таблички, цвет этажа.':'Кабинет: табличка, плакат, дверь.');
-  if(m==='cor'){ iy=0; ip=0; corZ=-1; } if(m==='cls'){ iy=0; ip=0; } }
+  if(m==='cor'){ iy=0; ip=0; corZ=-1; } if(m==='cls'){ iy=0; ip=0; }
+  renderer.toneMappingExposure=(m==='ext'?ext:(m==='cor'?cor:cls)).exposure; }
 function cur(){ return mode==='ext'?ext.scene:(mode==='cor'?cor.scene:cls.scene); }
 function activeCam(){ return mode==='ext'?camE:camI; }
 
-/* ——— камера ——— */
 function placeExtCam(){ var cp=Math.cos(pitch); camE.position.set(T.x+Math.sin(yaw)*cp*R, T.y+Math.sin(pitch)*R, T.z+Math.cos(yaw)*cp*R); camE.lookAt(T); }
-function placeIntCam(){ if(mode==='cor') camI.position.set(0,1.6,corZ); else camI.position.set(0,1.55,3.6); camI.rotation.order='YXZ'; camI.rotation.y=iy; camI.rotation.x=ip; }
+function placeIntCam(){ if(mode==='cor') camI.position.set(0,1.6,corZ); else camI.position.set(0,1.55,4.35); camI.rotation.order='YXZ'; camI.rotation.y=iy; camI.rotation.x=ip; }
 var drag=null;
 stage.addEventListener('pointerdown',function(e){ if(busy) return; drag={x:e.clientX,y:e.clientY}; stage.classList.add('drag'); stage.setPointerCapture(e.pointerId); });
 stage.addEventListener('pointermove',function(e){ if(!drag) return; var dx=e.clientX-drag.x, dy=e.clientY-drag.y; drag.x=e.clientX; drag.y=e.clientY;
@@ -244,12 +308,11 @@ stage.addEventListener('pointermove',function(e){ if(!drag) return; var dx=e.cli
   else { iy=Math.max(-.9,Math.min(.9,iy+dx*.004)); ip=Math.max(-.35,Math.min(.35,ip+dy*.003)); } });
 function up(){ drag=null; stage.classList.remove('drag'); } stage.addEventListener('pointerup',up); stage.addEventListener('pointercancel',up);
 var EMBED=document.documentElement.classList.contains('embed');
-function walk(d){ if(mode==='cor'&&!busy) corZ=Math.max(-26,Math.min(-1,corZ-d)); }
+function walk(d){ if(mode==='cor'&&!busy) corZ=Math.max(-24,Math.min(-1,corZ-d)); }
 document.getElementById('fw').addEventListener('click',function(){ walk(2.5); });
 document.getElementById('bw').addEventListener('click',function(){ walk(-2.5); });
-window.addEventListener('wheel',function(e){ if(!EMBED&&mode==='cor'&&!busy){ corZ=Math.max(-26,Math.min(-1,corZ-e.deltaY*.012)); e.preventDefault(); } },{passive:false});
+window.addEventListener('wheel',function(e){ if(!EMBED&&mode==='cor'&&!busy){ walk(e.deltaY*.012); e.preventDefault(); } },{passive:false});
 
-/* ——— переходы ——— */
 function wait(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
 function zoomTo(h){ busy=true; hideCard(); var from=camE.position.clone(), to=from.clone().lerp(h.v,.9), t0=performance.now(), T0=T.clone(), look=new THREE.Vector3();
   (function step(){ var k=Math.min(1,(performance.now()-t0)/950), e=ease(k); camE.position.lerpVectors(from,to,e); look.lerpVectors(T0,h.v,e); camE.lookAt(look); camE.fov=28-e*8; camE.updateProjectionMatrix(); if(k>.6) fade.classList.add('on');
@@ -257,22 +320,20 @@ function zoomTo(h){ busy=true; hideCard(); var from=camE.position.clone(), to=fr
 function enter(m){ wait(380).then(function(){ camE.fov=28; camE.updateProjectionMatrix(); setMode(m); placeIntCam(); resize(); fade.classList.remove('on'); busy=false; }); }
 document.getElementById('back').addEventListener('click',function(){ if(busy) return; busy=true; fade.classList.add('on'); wait(380).then(function(){ yaw=.32; pitch=.1; setMode('ext'); fade.classList.remove('on'); busy=false; }); });
 
-/* ——— цикл ——— */
 function resize(){ var w=innerWidth,h=innerHeight; renderer.setSize(w,h); camE.aspect=camI.aspect=w/h; camE.updateProjectionMatrix(); camI.updateProjectionMatrix();
   R=w/h<1?78:(w/h<1.4?58:38); }
 window.addEventListener('resize',resize);
-var vec=new THREE.Vector3(), t0=performance.now();
-function frame(){ raf=requestAnimationFrame(frame); var t=(performance.now()-t0)/1000;
-  if(!busy){ if(mode==='ext'){ var sway=drag?0:Math.sin(t*.35)*.06; var y0=yaw; yaw+=sway*.01; placeExtCam(); } else placeIntCam(); }
+var vec=new THREE.Vector3(), nrm=new THREE.Vector3(), dd=new THREE.Vector3(), t0=performance.now();
+function frame(){ requestAnimationFrame(frame); var t=(performance.now()-t0)/1000;
+  if(!busy){ if(mode==='ext'){ if(!drag) yaw+=Math.sin(t*.35)*.0006; placeExtCam(); } else placeIntCam(); }
   var cam=activeCam(); renderer.render(cur(),cam);
   HS.forEach(function(h){ vec.copy(h.v).project(cam); var vis=vec.z<1&&vec.z>-1&&Math.abs(vec.x)<1.05&&Math.abs(vec.y)<1.05&&!busy;
-    if(vis&&h.n){ var d=new THREE.Vector3().subVectors(cam.position,h.v); if(d.dot(new THREE.Vector3(h.n[0],h.n[1],h.n[2]))<0) vis=false; }
-    if(mode!=='ext'&&vis){ var dist=cam.position.distanceTo(h.v); if(dist>20||dist<.5) vis=false; }
+    if(vis&&h.n){ dd.subVectors(cam.position,h.v); if(dd.dot(nrm.set(h.n[0],h.n[1],h.n[2]))<0) vis=false; }
+    if(mode!=='ext'&&vis){ var dist=cam.position.distanceTo(h.v); if(dist>22||dist<.5) vis=false; }
     h.el.classList.toggle('hide',!vis); if(vis){ var x=(vec.x*.5+.5)*innerWidth, y=(-vec.y*.5+.5)*innerHeight; h.el.style.transform='translate('+(x-h.el.offsetWidth/2)+'px,'+(y-h.el.offsetHeight/2)+'px)'; } });
   placeCard(); }
 
 Promise.all([document.fonts.load('800 60px Manrope'),document.fonts.load('600 40px Manrope'),document.fonts.load('400 100px "Days One"'),document.fonts.ready]).catch(function(){}).then(function(){
-  // текстуры с текстом строятся после загрузки шрифтов
   ext=buildExterior(); cor=buildCorridor(); cls=buildClass();
   setMode('ext'); resize(); placeExtCam(); frame(); });
 })();
