@@ -3954,3 +3954,11 @@ html body .hd-dimg text{ fill:#6B7584; }
 html body .hd-guides{ animation:hdFx 1.2s .15s ease forwards; }
 html body .hd-gl-d line{ stroke:#C9CFD8; stroke-width:1; stroke-dasharray:6 8; }
 html body .hd-gl-x path{ stroke:#9AA2AF; stroke-width:1; }
+
+/* заливка школы — одним плавным переходом после линий */
+html body .hd-sh{ --fd:4.5s; animation:hdDraw 1.3s var(--d) cubic-bezier(.45,.1,.3,1) forwards, hdFill 1.4s var(--fd) ease-in-out forwards, hdTone 1s 4.5s ease forwards; }
+html body .hd-nf{ animation:hdDraw 1.3s var(--d) cubic-bezier(.45,.1,.3,1) forwards, hdTone 1s 4.5s ease forwards; }
+html body .hd-dec{ transform:none; animation:hdDecFade 1.2s 4.9s ease-in-out forwards; }
+@keyframes hdDecFade{ to{ opacity:1; } }
+html body .hd-fx{ animation:hdFx 1.4s 5.6s ease forwards; }
+html body .hd-hot{ animation-delay:calc(6.3s + var(--n) * .15s); }
