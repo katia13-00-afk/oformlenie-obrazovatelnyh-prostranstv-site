@@ -3837,3 +3837,12 @@ html body .hd2 .hd2-cta .btn:active{ transform:scale(.98) !important; }
 /* кнопки-таблички: без «шурупов», шрифт текста тоньше */
 html body .hd2 .hd2-cta .btn, html body .hd2 .hd2-cta .btn-primary:hover, html body .hd2 .hd2-cta .btn-ghost:hover{ background:var(--bc) !important; }
 html body .hd2 .hd2-cta .btn{ padding-left:20px !important; font-family:var(--f-text); font-weight:500; letter-spacing:0; }
+
+/* ───────── главный экран: масштаб на больших экранах и высота ровно в окно ───────── */
+html body .hd2{ min-height:calc(100svh - 64px); }
+html body .hd2 h1{ font-size:clamp(28px,3.6vw,88px); }
+html body .hd2 .hd2-eyebrow{ font-size:clamp(11px,.82vw,17px); }
+html body .hd2 .hd2-cta .btn{ font-size:clamp(14px,1vw,21px); padding:.95em 0 .95em 1.45em !important; border-radius:.7em; }
+html body .hd2 .hd2-cta .btn .btn-arrow{ width:3em; margin:-.95em 0 -.95em 1.3em; }
+html body .hd2 .hd2-cta .btn .btn-arrow svg{ width:1em; height:1em; }
+@media(min-width:901px){ html body .hd2-art .hd-svg{ width:min(74vw,1900px); } }
