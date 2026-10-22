@@ -4316,3 +4316,8 @@ html body #process .pr-card, html body #process .pr-split .pr-card{ box-shadow:0
   html body header #siteNav{ gap:2px !important; }
   html body header #siteNav a{ font-size:13px !important; padding:6px 9px 6px 6px !important; }
 }
+
+/* карточки проектов без фото: цветная плашка с названием */
+html body .arc-photo--tile{ background:var(--tc) !important; display:flex; align-items:flex-start; justify-content:flex-start; padding:clamp(18px,2vw,30px); box-sizing:border-box; }
+html body .arc-photo--tile .arc-big{ font-family:var(--f-sign); font-weight:400; font-size:clamp(28px,3.1vw,54px); line-height:1.02; letter-spacing:.01em; color:var(--tf); text-transform:uppercase; hyphens:manual; overflow-wrap:normal; }
+html body .arc-photo--tile + .arc-cap{ background:none !important; color:var(--tf); }
