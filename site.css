@@ -4310,3 +4310,9 @@ html body #whyus .wy-slide h3{ font-size:clamp(18px,1.5vw,22px) !important; }
 /* этапы работы: почти без теней */
 html body #process .pr-card, html body #process .pr-split .pr-card{ box-shadow:0 1px 2px rgba(22,25,27,.05) !important; filter:none !important; }
 @media(hover:hover){ html body #process .pr-card:hover{ box-shadow:0 8px 18px -12px rgba(22,25,27,.22) !important; } }
+
+/* шапка на ширине 901–1180px: чтобы меню не вылезало за экран */
+@media(min-width:901px) and (max-width:1180px){
+  html body header #siteNav{ gap:2px !important; }
+  html body header #siteNav a{ font-size:13px !important; padding:6px 9px 6px 6px !important; }
+}
