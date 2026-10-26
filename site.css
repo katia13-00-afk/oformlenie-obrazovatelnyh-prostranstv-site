@@ -4330,3 +4330,14 @@ html body .hero-dark .cta-row .btn-ghost .btn-arrow{ background:#EDEFF3 !importa
 html body .hero-dark .cta-row .btn-ghost .btn-arrow svg path{ stroke:#16191B !important; }
 html body .hero-dark .cta-row .btn-ghost:hover{ background:#EDEFF3 !important; }
 html body .hero-dark .hero-photo::after{ background:linear-gradient(to top, rgba(10,12,14,.82) 0%, rgba(10,12,14,.55) 32%, rgba(10,12,14,.18) 62%, rgba(10,12,14,0) 100%) !important; }
+
+/* «Почему нас выбирают»: спокойные пастельные карточки, яркий цвет только на иконках */
+html body #whyus .wy-slide{ color:#16191B !important; box-shadow:none !important; }
+html body #whyus .wy-slide::after{ background:rgba(255,255,255,.55) !important; }
+html body #whyus .wy-n{ color:#16191B; opacity:.5; }
+html body #whyus .wy-ico{ color:#fff !important; }
+html body #whyus .wy-orange{ background:#FFEBE3 !important; } html body #whyus .wy-orange .wy-ico{ background:#FB4903 !important; }
+html body #whyus .wy-green{ background:#E3F4E9 !important; }  html body #whyus .wy-green .wy-ico{ background:#1FA24A !important; }
+html body #whyus .wy-red{ background:#FDE6E6 !important; }    html body #whyus .wy-red .wy-ico{ background:#E5252A !important; }
+html body #whyus .wy-blue{ background:#E4EDFF !important; }   html body #whyus .wy-blue .wy-ico{ background:#0055FF !important; }
+html body #whyus .wy-yellow{ background:#FFF4CC !important; } html body #whyus .wy-yellow .wy-ico{ background:#FFD21F !important; color:#16191B !important; }
